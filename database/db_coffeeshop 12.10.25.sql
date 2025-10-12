@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 06, 2025 at 09:48 AM
+-- Generation Time: Oct 12, 2025 at 07:17 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `db_toko`
+-- Database: `db_coffeeshop`
 --
 
 -- --------------------------------------------------------
@@ -57,6 +57,8 @@ CREATE TABLE `detail_pesanan` (
 
 CREATE TABLE `karyawan` (
   `id_karyawan` int(11) NOT NULL,
+  `username` varchar(14) DEFAULT NULL,
+  `password_akun` varchar(14) DEFAULT NULL,
   `nama` varchar(50) DEFAULT NULL,
   `posisi` varchar(50) DEFAULT NULL,
   `tanggal_melamar` date DEFAULT NULL,
@@ -67,11 +69,11 @@ CREATE TABLE `karyawan` (
 -- Dumping data for table `karyawan`
 --
 
-INSERT INTO `karyawan` (`id_karyawan`, `nama`, `posisi`, `tanggal_melamar`, `gaji`) VALUES
-(1, 'veby rokhmatul ambiya', 'manager', '2023-08-17', 3000000.00),
-(2, 'sujono wijayanto', 'waiters', '2023-08-17', 1200000.00),
-(3, 'alex morgan', 'barista', '2025-08-17', 1900000.00),
-(4, 'laila anjani', 'cook', '2025-08-17', 2000000.00);
+INSERT INTO `karyawan` (`id_karyawan`, `username`, `password_akun`, `nama`, `posisi`, `tanggal_melamar`, `gaji`) VALUES
+(1, '1011', '121256', 'veby rokhmatul ambiya', 'manager', '2023-08-17', 3000000.00),
+(2, NULL, NULL, 'sujono wijayanto', 'waiters', '2023-08-17', 1200000.00),
+(3, NULL, NULL, 'alex morgan', 'barista', '2025-08-17', 1900000.00),
+(4, NULL, NULL, 'laila anjani', 'cook', '2025-08-17', 2000000.00);
 
 -- --------------------------------------------------------
 
