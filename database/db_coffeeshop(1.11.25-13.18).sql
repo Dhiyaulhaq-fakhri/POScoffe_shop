@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 12, 2025 at 07:17 AM
+-- Generation Time: Nov 01, 2025 at 07:17 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -60,20 +60,20 @@ CREATE TABLE `karyawan` (
   `username` varchar(14) DEFAULT NULL,
   `password_akun` varchar(14) DEFAULT NULL,
   `nama` varchar(50) DEFAULT NULL,
-  `posisi` varchar(50) DEFAULT NULL,
-  `tanggal_melamar` date DEFAULT NULL,
-  `gaji` decimal(10,2) DEFAULT NULL
+  `posisi` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `karyawan`
 --
 
-INSERT INTO `karyawan` (`id_karyawan`, `username`, `password_akun`, `nama`, `posisi`, `tanggal_melamar`, `gaji`) VALUES
-(1, '1011', '121256', 'veby rokhmatul ambiya', 'manager', '2023-08-17', 3000000.00),
-(2, NULL, NULL, 'sujono wijayanto', 'waiters', '2023-08-17', 1200000.00),
-(3, NULL, NULL, 'alex morgan', 'barista', '2025-08-17', 1900000.00),
-(4, NULL, NULL, 'laila anjani', 'cook', '2025-08-17', 2000000.00);
+INSERT INTO `karyawan` (`id_karyawan`, `username`, `password_akun`, `nama`, `posisi`) VALUES
+(1, '1011', '121256', 'veby rokhmatul ambiya', 'manager'),
+(2, NULL, NULL, 'sujono wijayanto', 'waiters'),
+(3, NULL, NULL, 'alex morgan', 'barista'),
+(4, NULL, NULL, 'laila anjani', 'cook'),
+(5, 'fakhrifix', '6789', 'Dhiyaulhaq fakhri', 'admin'),
+(6, '2045', 'pentest', 'hauzan nabil', 'cook');
 
 -- --------------------------------------------------------
 

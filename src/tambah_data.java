@@ -7,6 +7,11 @@
  *
  * @author Lenovo
  */
+
+import javax.swing.*;
+import java.awt.event.*;
+import java.sql.*;
+
 public class tambah_data extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(tambah_data.class.getName());
@@ -18,7 +23,38 @@ public class tambah_data extends javax.swing.JFrame {
         initComponents();
         setLocationRelativeTo(null);
     }
+    
+    private void simpanData() {
+        String id_karyawan = txtid_karyawantambah.getText();
+        String username = txtnew_usernamefield.getText();
+        String password = txtnew_passfield.getText();
+        String nama = txtnew_namefield.getText();
+        String posisi = txtnew_posisifield.getText();
 
+        if (username.isEmpty() || password.isEmpty() || nama.isEmpty() || posisi.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Semua kolom harus diisi!");
+            return;
+        }
+        
+        try {
+            Connection conn = koneksi.getConnection();
+            String sql = "INSERT INTO karyawan (id_karyawan,username, password_akun, nama, posisi) VALUES (?, ?, ?, ?, ?)";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, id_karyawan);
+            pst.setString(2, username);
+            pst.setString(3, password);
+            pst.setString(4, nama);
+            pst.setString(5, posisi);
+            pst.executeUpdate();
+
+            JOptionPane.showMessageDialog(this, "Data berhasil ditambahkan!");
+            pst.close();
+            dispose();
+
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Gagal menyimpan data: " + ex.getMessage());
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -35,11 +71,11 @@ public class tambah_data extends javax.swing.JFrame {
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        id_karyawantambah = new javax.swing.JTextField();
-        new_usernamefield = new javax.swing.JTextField();
-        new_passfield = new javax.swing.JTextField();
-        new_namefield = new javax.swing.JTextField();
-        new_posisifield = new javax.swing.JTextField();
+        txtid_karyawantambah = new javax.swing.JTextField();
+        txtnew_usernamefield = new javax.swing.JTextField();
+        txtnew_passfield = new javax.swing.JTextField();
+        txtnew_namefield = new javax.swing.JTextField();
+        txtnew_posisifield = new javax.swing.JTextField();
         tambah_data = new javax.swing.JButton();
         batal_tambah = new javax.swing.JButton();
 
@@ -71,18 +107,23 @@ public class tambah_data extends javax.swing.JFrame {
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         jLabel6.setText("Posisi :");
 
-        id_karyawantambah.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        txtid_karyawantambah.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
 
-        new_usernamefield.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
+        txtnew_usernamefield.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
 
-        new_passfield.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
+        txtnew_passfield.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
 
-        new_namefield.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        txtnew_namefield.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
 
-        new_posisifield.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
+        txtnew_posisifield.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
 
         tambah_data.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
         tambah_data.setText("Tambah");
+        tambah_data.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                tambah_dataActionPerformed(evt);
+            }
+        });
 
         batal_tambah.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
         batal_tambah.setText("Batal");
@@ -112,11 +153,11 @@ public class tambah_data extends javax.swing.JFrame {
                             .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(id_karyawantambah)
-                            .addComponent(new_usernamefield)
-                            .addComponent(new_passfield)
-                            .addComponent(new_namefield)
-                            .addComponent(new_posisifield, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE))
+                            .addComponent(txtid_karyawantambah)
+                            .addComponent(txtnew_usernamefield)
+                            .addComponent(txtnew_passfield)
+                            .addComponent(txtnew_namefield)
+                            .addComponent(txtnew_posisifield, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE))
                         .addGap(27, 27, 27))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addComponent(batal_tambah, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -132,23 +173,23 @@ public class tambah_data extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(id_karyawantambah, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtid_karyawantambah, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(new_usernamefield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtnew_usernamefield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
-                    .addComponent(new_passfield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtnew_passfield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
-                    .addComponent(new_namefield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtnew_namefield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6)
-                    .addComponent(new_posisifield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtnew_posisifield, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(tambah_data)
@@ -174,6 +215,16 @@ public class tambah_data extends javax.swing.JFrame {
         // TODO add your handling code here:
         setVisible(false);
     }//GEN-LAST:event_batal_tambahActionPerformed
+
+    private void tambah_dataActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tambah_dataActionPerformed
+        // TODO add your handling code here:
+        tambah_data.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                simpanData();
+            }
+        });
+    }//GEN-LAST:event_tambah_dataActionPerformed
 
     /**
      * @param args the command line arguments
@@ -202,7 +253,6 @@ public class tambah_data extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton batal_tambah;
-    private javax.swing.JTextField id_karyawantambah;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -210,10 +260,11 @@ public class tambah_data extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JTextField new_namefield;
-    private javax.swing.JTextField new_passfield;
-    private javax.swing.JTextField new_posisifield;
-    private javax.swing.JTextField new_usernamefield;
     private javax.swing.JButton tambah_data;
+    private javax.swing.JTextField txtid_karyawantambah;
+    private javax.swing.JTextField txtnew_namefield;
+    private javax.swing.JTextField txtnew_passfield;
+    private javax.swing.JTextField txtnew_posisifield;
+    private javax.swing.JTextField txtnew_usernamefield;
     // End of variables declaration//GEN-END:variables
 }

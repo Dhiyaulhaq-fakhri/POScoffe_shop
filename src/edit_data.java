@@ -1,3 +1,8 @@
+import javax.swing.*;
+import java.awt.event.*;
+import java.sql.*;
+
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -14,10 +19,17 @@ public class edit_data extends javax.swing.JFrame {
     /**
      * Creates new form edit_data
      */
-    public edit_data() {
+    public edit_data(String id, String username, String password, String nama, String posisi) {
         initComponents();
         setLocationRelativeTo(null);
+        
+        txtid_field.setText(id);
+        txtusername_field.setText(username);
+        txtpassword_field.setText(password);
+        txtnama_field.setText(nama);
+        txtposisi_field.setText(posisi);
     }
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -30,18 +42,18 @@ public class edit_data extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        id_field = new javax.swing.JTextField();
-        username_field = new javax.swing.JTextField();
-        password_field = new javax.swing.JTextField();
-        nama_field = new javax.swing.JTextField();
-        posisi_field = new javax.swing.JTextField();
+        txtid_field = new javax.swing.JTextField();
+        txtusername_field = new javax.swing.JTextField();
+        txtpassword_field = new javax.swing.JTextField();
+        txtnama_field = new javax.swing.JTextField();
+        txtposisi_field = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        jtombol_simpan_edit = new javax.swing.JButton();
+        jtombol_batal = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -51,15 +63,15 @@ public class edit_data extends javax.swing.JFrame {
         jLabel1.setFont(new java.awt.Font("SansSerif", 0, 24)); // NOI18N
         jLabel1.setText("Edit data yang sudah ada");
 
-        id_field.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
+        txtid_field.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
 
-        username_field.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
+        txtusername_field.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
 
-        password_field.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
+        txtpassword_field.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
 
-        nama_field.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
+        txtnama_field.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
 
-        posisi_field.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
+        txtposisi_field.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
 
         jLabel2.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
@@ -81,14 +93,19 @@ public class edit_data extends javax.swing.JFrame {
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         jLabel6.setText("Posisi :");
 
-        jButton1.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
-        jButton1.setText("simpan");
-
-        jButton2.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
-        jButton2.setText("Batal");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        jtombol_simpan_edit.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
+        jtombol_simpan_edit.setText("simpan");
+        jtombol_simpan_edit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                jtombol_simpan_editActionPerformed(evt);
+            }
+        });
+
+        jtombol_batal.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
+        jtombol_batal.setText("Batal");
+        jtombol_batal.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jtombol_batalActionPerformed(evt);
             }
         });
 
@@ -106,11 +123,11 @@ public class edit_data extends javax.swing.JFrame {
                     .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(posisi_field, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
-                    .addComponent(nama_field, javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(id_field)
-                    .addComponent(username_field)
-                    .addComponent(password_field))
+                    .addComponent(txtposisi_field, javax.swing.GroupLayout.DEFAULT_SIZE, 355, Short.MAX_VALUE)
+                    .addComponent(txtnama_field, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtid_field)
+                    .addComponent(txtusername_field)
+                    .addComponent(txtpassword_field))
                 .addGap(40, 40, 40))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                 .addContainerGap(157, Short.MAX_VALUE)
@@ -119,9 +136,9 @@ public class edit_data extends javax.swing.JFrame {
                         .addComponent(jLabel1)
                         .addGap(153, 153, 153))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jtombol_batal, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(60, 60, 60)
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jtombol_simpan_edit, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(151, 151, 151))))
         );
         jPanel1Layout.setVerticalGroup(
@@ -131,28 +148,28 @@ public class edit_data extends javax.swing.JFrame {
                 .addComponent(jLabel1)
                 .addGap(38, 38, 38)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(id_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtid_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel2))
                 .addGap(25, 25, 25)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
-                    .addComponent(username_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtusername_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(28, 28, 28)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(password_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtpassword_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4))
                 .addGap(31, 31, 31)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(nama_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtnama_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(30, 30, 30)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(posisi_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtposisi_field, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel6))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 26, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2))
+                    .addComponent(jtombol_simpan_edit)
+                    .addComponent(jtombol_batal))
                 .addGap(16, 16, 16))
         );
 
@@ -174,40 +191,54 @@ public class edit_data extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void jtombol_batalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtombol_batalActionPerformed
         // TODO add your handling code here:
         setVisible(false);
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_jtombol_batalActionPerformed
+
+    private void jtombol_simpan_editActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtombol_simpan_editActionPerformed
+        // TODO add your handling code here:                                              
+        try {
+            // ambil data dari field
+            String id = txtid_field.getText();
+            String username = txtusername_field.getText();
+            String password = txtpassword_field.getText();
+            String nama = txtnama_field.getText();
+            String posisi = txtposisi_field.getText();
+
+            // koneksi ke database
+            Connection conn = koneksi.getConnection();
+
+            // query update data karyawan
+            String sql = "UPDATE karyawan SET username=?, password_akun=?, nama=?, posisi=? WHERE id_karyawan=?";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, username);
+            pst.setString(2, password);
+            pst.setString(3, nama);
+            pst.setString(4, posisi);
+            pst.setString(5, id);
+
+            int hasil = pst.executeUpdate();
+            if (hasil > 0) {
+                JOptionPane.showMessageDialog(this, "Data berhasil disimpan!");
+                dispose(); // menutup form edit_data setelah simpan
+            } else {
+                JOptionPane.showMessageDialog(this, "Gagal menyimpan data!");
+            }
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Terjadi kesalahan: " + e.getMessage());
+        }
+
+
+    }//GEN-LAST:event_jtombol_simpan_editActionPerformed
 
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
 
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new edit_data().setVisible(true));
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField id_field;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -215,9 +246,12 @@ public class edit_data extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JTextField nama_field;
-    private javax.swing.JTextField password_field;
-    private javax.swing.JTextField posisi_field;
-    private javax.swing.JTextField username_field;
+    private javax.swing.JButton jtombol_batal;
+    private javax.swing.JButton jtombol_simpan_edit;
+    private javax.swing.JTextField txtid_field;
+    private javax.swing.JTextField txtnama_field;
+    private javax.swing.JTextField txtpassword_field;
+    private javax.swing.JTextField txtposisi_field;
+    private javax.swing.JTextField txtusername_field;
     // End of variables declaration//GEN-END:variables
 }

@@ -144,12 +144,17 @@ public class Loginform extends javax.swing.JFrame {
                 // Ambil data dari kolom di database
                 String usernameDb = rs.getString("username");      // kolom username di tabel kamu
                 String nama = rs.getString("nama");       // ubah sesuai nama kolom di tabelmu
-
+                String posisi = rs.getString("posisi");
                 
                 javax.swing.JOptionPane.showMessageDialog(this, "Login berhasil!");
-                // Contoh buka form utama
-                halamanutama main = new halamanutama(usernameDb, nama);
-                new halamanutama(username, nama).setVisible(true);
+                
+                if ("admin".equalsIgnoreCase(posisi)) {
+                adminpanel adminPage = new adminpanel(usernameDb, nama);
+                adminPage.setVisible(true);
+                } else {
+                halamanutama mainPage = new halamanutama(usernameDb, nama);
+                mainPage.setVisible(true);
+                }
                 this.dispose();
             } else {
                 javax.swing.JOptionPane.showMessageDialog(this, "Username atau password salah!");
