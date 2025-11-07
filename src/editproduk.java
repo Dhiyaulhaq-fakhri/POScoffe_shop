@@ -1,3 +1,8 @@
+import javax.swing.*;
+import java.awt.event.*;
+import java.sql.*;
+import javax.swing.JOptionPane;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -14,9 +19,15 @@ public class editproduk extends javax.swing.JFrame {
     /**
      * Creates new form editproduk
      */
-    public editproduk() {
+    public editproduk(String idp, String namaproduk, String jenisproduk, String harga, String stok) {
         initComponents();
         setLocationRelativeTo(null);
+        
+        txtid_produk.setText(idp);
+        txtnamaproduk.setText(namaproduk);
+        txtjenisproduk.setText(jenisproduk);
+        txthargaproduk.setText(harga);
+        txtstokproduk.setText(stok);
     }
 
     /**
@@ -93,6 +104,11 @@ public class editproduk extends javax.swing.JFrame {
         txtstokproduk.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
 
         Jtombolsimpanproduk.setText("Simpan");
+        Jtombolsimpanproduk.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                JtombolsimpanprodukActionPerformed(evt);
+            }
+        });
 
         Jtombolbatalproduk.setText("Batal");
         Jtombolbatalproduk.addActionListener(new java.awt.event.ActionListener() {
@@ -135,23 +151,23 @@ public class editproduk extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jLabel1)
-                .addGap(37, 37, 37)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(txtid_produk, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtnamaproduk, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel3))
-                .addGap(17, 17, 17)
+                    .addComponent(txtid_produk, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2))
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3)
+                    .addComponent(txtnamaproduk, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel4)
                     .addComponent(txtjenisproduk, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(txthargaproduk, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(15, 15, 15)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtstokproduk, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel6))
@@ -159,7 +175,7 @@ public class editproduk extends javax.swing.JFrame {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(Jtombolsimpanproduk)
                     .addComponent(Jtombolbatalproduk))
-                .addContainerGap(35, Short.MAX_VALUE))
+                .addContainerGap(44, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -195,30 +211,42 @@ public class editproduk extends javax.swing.JFrame {
         setVisible(false);
     }//GEN-LAST:event_JtombolbatalprodukActionPerformed
 
+    private void JtombolsimpanprodukActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JtombolsimpanprodukActionPerformed
+        // TODO add your handling code here:
+        try {
+            String id_produk = txtid_produk.getText();
+            String nama_produk = txtnamaproduk.getText();
+            String jenis_produk = txtjenisproduk.getText();
+            String harga_produk = txthargaproduk.getText();
+            String stok_produk = txtstokproduk.getText();
+            
+            Connection conn = koneksi.getConnection();
+            
+            String sql = "UPDATE produk SET nama=?, jenis=?, harga=?, stok=? WHERE id_produk=?";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, nama_produk);
+            pst.setString(2, jenis_produk);
+            pst.setString(3, harga_produk);
+            pst.setString(4, stok_produk);
+            pst.setString(5, id_produk);
+            
+            int hasil = pst.executeUpdate();
+            
+            if (hasil > 0) {
+                JOptionPane.showMessageDialog(this, "Data berhasil disimpan!");
+                dispose(); // menutup form edit_data setelah simpan
+            } else {
+                JOptionPane.showMessageDialog(this, "Gagal menyimpan data!");
+            }
+            
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Terjadi kesalahan: " + e.getMessage());
+        }
+    }//GEN-LAST:event_JtombolsimpanprodukActionPerformed
+
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new editproduk().setVisible(true));
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Jtombolbatalproduk;

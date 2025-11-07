@@ -50,7 +50,7 @@ public class adminpanel extends javax.swing.JFrame {
 
     }
     
-     private void loadProfileImage(){
+    private void loadProfileImage(){
             java.net.URL imgURL = getClass().getResource("/images/Userpfpconvert.jpg");
         if (imgURL != null) {
             ImageIcon icon = new ImageIcon(imgURL);
@@ -218,7 +218,7 @@ public class adminpanel extends javax.swing.JFrame {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(459, Short.MAX_VALUE)
+                .addContainerGap(702, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(nama_admin_sekarang, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -349,7 +349,7 @@ public class adminpanel extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 681, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 924, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
@@ -463,7 +463,7 @@ public class adminpanel extends javax.swing.JFrame {
 
     private void jlamaninventarisActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jlamaninventarisActionPerformed
         // TODO add your handling code here:
-        forminventaris fi = new forminventaris();
+        forminventaris fi = new forminventaris(username, nama);
         fi.setVisible(true);
     }//GEN-LAST:event_jlamaninventarisActionPerformed
 

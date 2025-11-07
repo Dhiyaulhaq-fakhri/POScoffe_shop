@@ -1,3 +1,7 @@
+import java.awt.Image;
+import javax.swing.ImageIcon;
+import javax.swing.table.DefaultTableModel;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
@@ -14,11 +18,134 @@ public class forminventaris extends javax.swing.JFrame {
     /**
      * Creates new form forminventaris
      */
+    private String username;
+    private String nama;
+    
     public forminventaris() {
         initComponents();
         setLocationRelativeTo(null);
     }
 
+    public forminventaris(String username, String nama) {
+        initComponents();
+        setLocationRelativeTo(null);
+        
+        txtdisplaynamapemakai2.setText(nama);
+        txtdisplaynamapemakai2.setEditable(false);
+        
+        tampilkandataproduk();
+        loadProfileImage();
+        
+        txttempatcaridata2.addKeyListener(new java.awt.event.KeyAdapter() {
+        @Override
+        public void keyReleased(java.awt.event.KeyEvent evt) {
+            String keyword = txttempatcaridata2.getText();
+            caridataproduk(keyword);
+        }
+    });
+       
+}
+    
+    private void loadProfileImage(){
+            java.net.URL imgURL = getClass().getResource("/images/Userpfpconvert.jpg");
+        if (imgURL != null) {
+            ImageIcon icon = new ImageIcon(imgURL);
+            // Resize gambar agar pas dengan tombol
+            Image scaled = icon.getImage().getScaledInstance(64, 64, Image.SCALE_SMOOTH);
+            jtombolprofil2.setIcon(new ImageIcon(scaled));
+        } else {
+            System.out.println("❌ Gambar tidak ditemukan di folder /images/");
+        }
+    }
+    
+    private void tampilkandataproduk() {
+    try {
+        java.sql.Connection conn = koneksi.getConnection();
+        
+        String sql = "SELECT * FROM produk";
+        java.sql.PreparedStatement pst = conn.prepareStatement(sql);
+        java.sql.ResultSet rs = pst.executeQuery();
+        
+        javax.swing.table.DefaultTableModel model = new javax.swing.table.DefaultTableModel();
+        
+        model.addColumn("id_produk");
+        model.addColumn("nama");
+        model.addColumn("jenis");
+        model.addColumn("harga");
+        model.addColumn("stok");
+        
+        while (rs.next()) {
+            model.addRow(new Object[]{
+                rs.getString("id_produk"),
+                rs.getString("nama"),
+                rs.getString("jenis"),
+                rs.getString("harga"),
+                rs.getString("stok")
+            });
+        }
+        
+        jtabelproduk2.setModel(model);
+        
+        // setting tabel
+        
+        jtabelproduk2.setFont(new java.awt.Font("SansSerif", java.awt.Font.PLAIN, 18));
+        jtabelproduk2.getTableHeader().setFont(new java.awt.Font("SanSerif", java.awt.Font.BOLD, 16));
+        jtabelproduk2.setRowHeight(28);
+        
+        
+        javax.swing.table.TableColumnModel columnModel = jtabelproduk2.getColumnModel();
+        columnModel.getColumn(0).setPreferredWidth(75);   // id_produk
+        columnModel.getColumn(1).setPreferredWidth(100);  // nama
+        columnModel.getColumn(2).setPreferredWidth(90);  // jenis
+        columnModel.getColumn(3).setPreferredWidth(100);  // harga
+        columnModel.getColumn(4).setPreferredWidth(90);   // stok
+        
+    }   catch (Exception e) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Gagal menampilkan data: " + e.getMessage());
+    }
+    
+        
+}
+    
+    private void caridataproduk(String keyword) {
+        DefaultTableModel model = new DefaultTableModel();
+        model.addColumn("id_produk");
+        model.addColumn("nama");
+        model.addColumn("jenis");
+        model.addColumn("harga");
+        model.addColumn("stok");
+        
+        try {
+            java.sql.Connection conn = koneksi.getConnection();
+            String sql = "SELECT * FROM produk "
+                        + "WHERE id_produk LIKE ? "
+                        + "OR nama LIKE ? "
+                        + "OR jenis LIKE ? "
+                        + "OR harga LIKE ? "
+                        + "OR stok LIKE ?";
+            java.sql.PreparedStatement pst = conn.prepareStatement(sql);
+            
+            String cari = "%" + keyword + "%";
+            for (int i = 1; i <= 5; i++) {
+                pst.setString(i, cari);
+            }
+            java.sql.ResultSet rs = pst.executeQuery();
+            
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    rs.getString("id_produk"),
+                    rs.getString("nama"),
+                    rs.getString("jenis"),
+                    rs.getString("harga"),
+                    rs.getString("stok")
+                });
+            }
+        jtabelproduk2.setModel(model);
+    } catch (Exception e) {
+        javax.swing.JOptionPane.showMessageDialog(this, "Terjadi kesalahan: " + e.getMessage());
+    }
+        
+}
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -82,7 +209,7 @@ public class forminventaris extends javax.swing.JFrame {
                 {null, null, null, null, null}
             },
             new String [] {
-                "id_produk", "nama", "jenis", "harga", "stock"
+                "id_produk", "nama", "jenis", "harga", "stok"
             }
         ));
         jScrollPane1.setViewportView(jtabelproduk2);
@@ -152,11 +279,12 @@ public class forminventaris extends javax.swing.JFrame {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jtombolprofil2, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jtombolprofil2, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(19, 19, 19)
                         .addComponent(txtdisplaynamapemakai2, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -164,7 +292,7 @@ public class forminventaris extends javax.swing.JFrame {
                     .addComponent(txttempatcaridata2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1))
                 .addGap(12, 12, 12)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 424, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -174,17 +302,70 @@ public class forminventaris extends javax.swing.JFrame {
     private void jtomboltambah2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtomboltambah2ActionPerformed
         // TODO add your handling code here:
         TambahProduk tp = new TambahProduk();
+        tp.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosed(java.awt.event.WindowEvent e) {
+                tampilkandataproduk(); // Refresh tabel produk setelah tambah
+            }
+        });
         tp.setVisible(true);
     }//GEN-LAST:event_jtomboltambah2ActionPerformed
 
     private void jtomboledit2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtomboledit2ActionPerformed
         // TODO add your handling code here:
-        editproduk ep = new editproduk();
-        ep.setVisible(true);
+        int row = jtabelproduk2.getSelectedRow();
+        if (row >= 0) {
+            String id = jtabelproduk2.getValueAt(row, 0).toString();
+            String nama = jtabelproduk2.getValueAt(row, 1).toString();
+            String jenis = jtabelproduk2.getValueAt(row, 2).toString();
+            String harga = jtabelproduk2.getValueAt(row, 3).toString();
+            String stok = jtabelproduk2.getValueAt(row, 4).toString();
+            
+            editproduk formeditp = new editproduk(id, nama, jenis, harga, stok);
+            formeditp.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosed(java.awt.event.WindowEvent e) {
+                    tampilkandataproduk();
+                }
+            });
+            formeditp.setVisible(true);
+        } else {
+            javax.swing.JOptionPane.showMessageDialog(this, "Pilih baris terlebih dahulu!");
+        }
     }//GEN-LAST:event_jtomboledit2ActionPerformed
 
     private void jtombolhapus2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtombolhapus2ActionPerformed
         // TODO add your handling code here:
+    int row = jtabelproduk2.getSelectedRow();
+            
+    if (row >= 0) {
+        String id = jtabelproduk2.getValueAt(row, 0).toString();
+        
+        int konfirmasi = javax.swing.JOptionPane.showConfirmDialog(
+                this,
+                "Apakah kamu yakin ingin menghapus data dengan ID: " + id + "?",
+                "Konfirmasi Hapus",
+                javax.swing.JOptionPane.YES_NO_OPTION
+        );
+        
+        if (konfirmasi == javax.swing.JOptionPane.YES_OPTION) {
+            try {
+                java.sql.Connection conn = koneksi.getConnection();
+                String sql = "DELETE FROM produk WHERE id_produk = ?";
+                java.sql.PreparedStatement pst = conn.prepareStatement(sql);
+                pst.setString(1, id);
+                pst.executeUpdate();
+                
+                javax.swing.JOptionPane.showMessageDialog(this, "Data berhasil dihapus!");
+                tampilkandataproduk();
+            } catch (Exception e) {
+                javax.swing.JOptionPane.showMessageDialog(this, "Terjadi kesalahan: " + e.getMessage());
+            }
+            }
+    } else {
+        javax.swing.JOptionPane.showMessageDialog(this, "Pilih baris terlebih dahulu!");
+    }
+                
     }//GEN-LAST:event_jtombolhapus2ActionPerformed
 
     private void txttempatcaridata2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txttempatcaridata2ActionPerformed
@@ -195,6 +376,10 @@ public class forminventaris extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jtombolprofil2ActionPerformed
 
+    private void txttempatcaridata2(java.awt.event.KeyEvent evt) {
+    String keyword = txttempatcaridata2.getText();
+    caridataproduk(keyword);
+    }
     /**
      * @param args the command line arguments
      */

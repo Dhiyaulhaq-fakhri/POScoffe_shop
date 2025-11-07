@@ -7,6 +7,11 @@
  *
  * @author ASUS
  */
+import javax.swing.*;
+import java.awt.event.*;
+import java.sql.*;
+
+
 public class TambahProduk extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TambahProduk.class.getName());
@@ -19,6 +24,37 @@ public class TambahProduk extends javax.swing.JFrame {
         setLocationRelativeTo(null);
     }
 
+    private void Tambah_produk() {
+        String id_produk = txtid_produk2.getText();
+        String nama_produk = txtnamaproduk2.getText();
+        String jenis_produk = txtjenisproduk2.getText();
+        String harga_produk = txthargaproduk2.getText();
+        String stok_produk = txtstokproduk2.getText();
+        
+        if (id_produk.isEmpty() || nama_produk.isEmpty() || jenis_produk.isEmpty() || harga_produk.isEmpty() || stok_produk.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "semua kolom harus di isi!");
+            return;
+        }
+            
+        try {
+            Connection conn = koneksi.getConnection();
+            String sql = "INSERT INTO produk (id_produk,nama,jenis,harga,stok) VALUES (?, ?, ?, ?, ?)";
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setString(1, id_produk);
+            pst.setString(2, nama_produk);
+            pst.setString(3, jenis_produk);
+            pst.setString(4, harga_produk);
+            pst.setString(5, stok_produk);
+            pst.executeUpdate();
+            
+            JOptionPane.showMessageDialog(this, "data berhasil ditambahkan");
+            pst.close();
+            dispose();
+            
+        }   catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Gagal menyimpan data: " + ex.getMessage());
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -71,19 +107,32 @@ public class TambahProduk extends javax.swing.JFrame {
         jLabel5.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
         jLabel5.setText("Stok :");
 
+        txtid_produk2.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
         txtid_produk2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtid_produk2ActionPerformed(evt);
             }
         });
 
+        txtnamaproduk2.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
+
+        txtjenisproduk2.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
         txtjenisproduk2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtjenisproduk2ActionPerformed(evt);
             }
         });
 
+        txthargaproduk2.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
+
+        txtstokproduk2.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+
         Jtombolsimpan.setText("Simpan");
+        Jtombolsimpan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                JtombolsimpanActionPerformed(evt);
+            }
+        });
 
         Jtombolbatal.setText("Batal");
         Jtombolbatal.addActionListener(new java.awt.event.ActionListener() {
@@ -124,10 +173,10 @@ public class TambahProduk extends javax.swing.JFrame {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(18, 18, 18)
                 .addComponent(jLabel7)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 38, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(txtid_produk2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(26, 26, 26)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(txtid_produk2, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
@@ -137,16 +186,14 @@ public class TambahProduk extends javax.swing.JFrame {
                     .addComponent(jLabel3)
                     .addComponent(txtjenisproduk2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel4)
+                    .addComponent(txthargaproduk2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(21, 21, 21)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
-                        .addGap(42, 42, 42)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(txtstokproduk2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel5)))
-                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(txthargaproduk2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel4)))
-                .addGap(18, 18, 18)
+                    .addComponent(jLabel5)
+                    .addComponent(txtstokproduk2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(Jtombolsimpan)
                     .addComponent(Jtombolbatal))
@@ -197,6 +244,16 @@ public class TambahProduk extends javax.swing.JFrame {
         // TODO add your handling code here:
         setVisible(false);
     }//GEN-LAST:event_JtombolbatalActionPerformed
+
+    private void JtombolsimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_JtombolsimpanActionPerformed
+        // TODO add your handling code here:
+        Jtombolsimpan.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Tambah_produk();
+            }
+        });
+    }//GEN-LAST:event_JtombolsimpanActionPerformed
 
     /**
      * @param args the command line arguments
