@@ -161,7 +161,7 @@ public class Loginform extends javax.swing.JFrame {
             }
         } catch (HeadlessException | SQLException e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Terjadi kesalahan: " + e.getMessage());
-        }
+        }   
     }//GEN-LAST:event_loginbuttonActionPerformed
 
     /**
