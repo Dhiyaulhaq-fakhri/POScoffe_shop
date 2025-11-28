@@ -7,6 +7,18 @@
  *
  * @author Lenovo
  */
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.awt.HeadlessException;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableColumn;
+
 public class halamannota extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(halamannota.class.getName());
@@ -14,10 +26,58 @@ public class halamannota extends javax.swing.JFrame {
     /**
      * Creates new form halamannota
      */
-    public halamannota() {
+    public halamannota(int idPesanan, String nomorNota, String kasir, double total) {
         initComponents();
+        
+        txtnoorder.setText(nomorNota);
+        txtnamakasir.setText(kasir);
+        txtstrukdibayar.setText(String.valueOf(total));
+        
+        
+        loadDataNota(idPesanan);
     }
 
+    
+    private void loadDataNota(int idPesanan) {
+    try {
+        Connection conn = koneksi.getConnection();
+
+        String sql = "SELECT p.nama, d.jumlah, d.harga_satuan " +
+                     "FROM detail_pesanan d " +
+                     "JOIN produk p ON d.id_produk = p.id_produk " +
+                     "WHERE d.id_pesanan = ?";
+
+        PreparedStatement pst = conn.prepareStatement(sql);
+        pst.setInt(1, idPesanan);
+
+        ResultSet rs = pst.executeQuery();
+
+        DefaultTableModel model = (DefaultTableModel) jtabelpembelianpr.getModel();
+        model.setRowCount(0); // clear tabel sebelum isi
+
+        while (rs.next()) {
+            String namaProduk = rs.getString("nama");
+            int jumlah = rs.getInt("jumlah");
+            double hargaSatuan = rs.getDouble("harga_satuan");
+            double subtotal = jumlah * hargaSatuan;
+
+            model.addRow(new Object[]{
+                namaProduk,
+                jumlah,
+                hargaSatuan,
+                subtotal
+            });
+        }
+
+        rs.close();
+        pst.close();
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this, "Gagal load data nota: " + e.getMessage());
+    }
+}
+
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -34,9 +94,9 @@ public class halamannota extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        jtabelpembelianpr = new javax.swing.JTable();
         jButtoncetakstruk = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        jtombolkmbl3 = new javax.swing.JButton();
         txtnoorder = new javax.swing.JTextField();
         txtpelanggan = new javax.swing.JTextField();
         txtnamakasir = new javax.swing.JTextField();
@@ -74,7 +134,7 @@ public class halamannota extends javax.swing.JFrame {
         jLabel4.setFont(new java.awt.Font("SansSerif", 1, 18)); // NOI18N
         jLabel4.setText(" List Order");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        jtabelpembelianpr.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -85,16 +145,16 @@ public class halamannota extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(jtabelpembelianpr);
 
         jButtoncetakstruk.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         jButtoncetakstruk.setText("Cetak Struk");
 
-        jButton1.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        jButton1.setText("Selesai");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        jtombolkmbl3.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        jtombolkmbl3.setText("Selesai");
+        jtombolkmbl3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                jtombolkmbl3ActionPerformed(evt);
             }
         });
 
@@ -124,7 +184,7 @@ public class halamannota extends javax.swing.JFrame {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jButtoncetakstruk)
                         .addGap(18, 18, 18)
-                        .addComponent(jButton1))
+                        .addComponent(jtombolkmbl3))
                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(jPanel2Layout.createSequentialGroup()
                             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -162,7 +222,7 @@ public class halamannota extends javax.swing.JFrame {
                 .addGap(29, 29, 29)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButtoncetakstruk)
-                    .addComponent(jButton1))
+                    .addComponent(jtombolkmbl3))
                 .addContainerGap(39, Short.MAX_VALUE))
         );
 
@@ -335,9 +395,10 @@ public class halamannota extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtdatetimeActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void jtombolkmbl3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtombolkmbl3ActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton1ActionPerformed
+        this.setVisible(false);
+    }//GEN-LAST:event_jtombolkmbl3ActionPerformed
 
     private void txtnamakasirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtnamakasirActionPerformed
         // TODO add your handling code here:
@@ -350,30 +411,29 @@ public class halamannota extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new halamannota().setVisible(true));
-    }
+//    public static void main(String args[]) {
+//        /* Set the Nimbus look and feel */
+//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+//         */
+//        try {
+//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                if ("Nimbus".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    break;
+//                }
+//            }
+//        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
+//            logger.log(java.util.logging.Level.SEVERE, null, ex);
+//        }
+//        //</editor-fold>
+//
+//        /* Create and display the form */
+//        java.awt.EventQueue.invokeLater(() -> new halamannota().setVisible(true));
+//    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButtoncetakstruk;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -390,8 +450,9 @@ public class halamannota extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTable jTable1;
     private javax.swing.JTable jTable2;
+    private javax.swing.JTable jtabelpembelianpr;
+    private javax.swing.JButton jtombolkmbl3;
     private javax.swing.JTextField txtdatetime;
     private javax.swing.JTextField txtnamakasir;
     private javax.swing.JTextField txtnomornota;

@@ -7,6 +7,22 @@
  *
  * @author Lenovo
  */
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.awt.HeadlessException;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableColumn;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+
 public class halamanpendapatanperhari extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(halamanpendapatanperhari.class.getName());
@@ -16,7 +32,95 @@ public class halamanpendapatanperhari extends javax.swing.JFrame {
      */
     public halamanpendapatanperhari() {
         initComponents();
+        setLocationRelativeTo(null);
+        
+        loadTotalPemasukanHariIni();
+        loadJumlahTransaksiHariIni();
+        loadMenuTerlarisHariIni();
+        loadTabelTransaksiHariIni();
     }
+
+    
+    public void loadTotalPemasukanHariIni() {
+    String sql = "SELECT SUM(total) AS total FROM pesanan WHERE DATE(tanggal) = CURDATE()";
+
+    try (Connection conn = koneksi.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        if (rs.next()) {
+            double total = rs.getDouble("total");
+            txtpemasukanhariini.setText(String.valueOf(total));
+        }
+    } catch (Exception e) {
+        System.out.println("Error total pemasukan: " + e.getMessage());
+    }
+}
+    
+    public void loadJumlahTransaksiHariIni() {
+    String sql = "SELECT COUNT(*) AS jml FROM pesanan WHERE DATE(tanggal) = CURDATE()";
+
+    try (Connection conn = koneksi.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        if (rs.next()) {
+            txtjmlhtrnskhrtd.setText(String.valueOf(rs.getInt("jml")));
+        }
+    } catch (Exception e) {
+        System.out.println("Error jumlah transaksi: " + e.getMessage());
+    }
+}
+    
+    public void loadMenuTerlarisHariIni() {
+    String sql = 
+        "SELECT p.nama, SUM(d.jumlah) AS total_qty " +
+        "FROM detail_pesanan d " +
+        "JOIN pesanan ps ON d.id_pesanan = ps.id_pesanan " +
+        "JOIN produk p ON d.id_produk = p.id_produk " +
+        "WHERE DATE(ps.tanggal) = CURDATE() " +
+        "GROUP BY p.id_produk " +
+        "ORDER BY total_qty DESC LIMIT 1";
+
+    try (Connection conn = koneksi.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        if (rs.next()) {
+            txtmenuterlrshrini.setText(rs.getString("nama"));
+        } else {
+            txtmenuterlrshrini.setText("-");
+        }
+    } catch (Exception e) {
+        System.out.println("Error menu terlaris: " + e.getMessage());
+    }
+}
+    
+    public void loadTabelTransaksiHariIni() {
+    String sql = "SELECT id_pesanan, tanggal, cashier, total FROM pesanan WHERE DATE(tanggal) = CURDATE()";
+
+    DefaultTableModel model = (DefaultTableModel) jtabeltrnsksi.getModel();
+    model.setRowCount(0);
+
+    try (Connection conn = koneksi.getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        while (rs.next()) {
+            model.addRow(new Object[]{
+                rs.getInt("id_pesanan"),
+                rs.getString("tanggal"),
+                rs.getString("cashier"),
+                rs.getDouble("total")
+            });
+        }
+    } catch (Exception e) {
+        System.out.println("Error load tabel transaksi: " + e.getMessage());
+    }
+}
+
+
+
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -35,24 +139,24 @@ public class halamanpendapatanperhari extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
-        jTextField3 = new javax.swing.JTextField();
+        txtpemasukanhariini = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
         jPanel4 = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
-        jTextField4 = new javax.swing.JTextField();
+        txtjmlhtrnskhrtd = new javax.swing.JTextField();
         jPanel5 = new javax.swing.JPanel();
         jLabel7 = new javax.swing.JLabel();
-        jTextField5 = new javax.swing.JTextField();
+        txtmenuterlrshrini = new javax.swing.JTextField();
         jPanel6 = new javax.swing.JPanel();
         jSeparator1 = new javax.swing.JSeparator();
         jLabel8 = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        jtabeltrnsksi = new javax.swing.JTable();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
-        jButton6 = new javax.swing.JButton();
+        jtombolkembalipendap = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
 
@@ -78,7 +182,7 @@ public class halamanpendapatanperhari extends javax.swing.JFrame {
         jLabel4.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         jLabel4.setText("Total Pemasukan :");
 
-        jTextField3.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        txtpemasukanhariini.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
 
         jLabel5.setFont(new java.awt.Font("SansSerif", 3, 14)); // NOI18N
         jLabel5.setText("Rp.");
@@ -94,7 +198,7 @@ public class halamanpendapatanperhari extends javax.swing.JFrame {
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(txtpemasukanhariini, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
@@ -104,7 +208,7 @@ public class halamanpendapatanperhari extends javax.swing.JFrame {
                 .addComponent(jLabel4)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtpemasukanhariini, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel5))
                 .addContainerGap(33, Short.MAX_VALUE))
         );
@@ -114,7 +218,7 @@ public class halamanpendapatanperhari extends javax.swing.JFrame {
         jLabel6.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         jLabel6.setText("Jumlah Transaksi :");
 
-        jTextField4.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        txtjmlhtrnskhrtd.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -124,7 +228,7 @@ public class halamanpendapatanperhari extends javax.swing.JFrame {
                 .addGap(15, 15, 15)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel6)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtjmlhtrnskhrtd, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(180, Short.MAX_VALUE))
         );
         jPanel4Layout.setVerticalGroup(
@@ -133,7 +237,7 @@ public class halamanpendapatanperhari extends javax.swing.JFrame {
                 .addGap(15, 15, 15)
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtjmlhtrnskhrtd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(35, Short.MAX_VALUE))
         );
 
@@ -142,7 +246,7 @@ public class halamanpendapatanperhari extends javax.swing.JFrame {
         jLabel7.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         jLabel7.setText("Menu Terlaris :");
 
-        jTextField5.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        txtmenuterlrshrini.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -152,7 +256,7 @@ public class halamanpendapatanperhari extends javax.swing.JFrame {
                 .addGap(16, 16, 16)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel7)
-                    .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 281, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtmenuterlrshrini, javax.swing.GroupLayout.PREFERRED_SIZE, 281, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(23, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
@@ -161,7 +265,7 @@ public class halamanpendapatanperhari extends javax.swing.JFrame {
                 .addGap(15, 15, 15)
                 .addComponent(jLabel7)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(txtmenuterlrshrini, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(35, Short.MAX_VALUE))
         );
 
@@ -181,7 +285,7 @@ public class halamanpendapatanperhari extends javax.swing.JFrame {
         jLabel8.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
         jLabel8.setText("Tabel transaksi");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        jtabeltrnsksi.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -189,10 +293,18 @@ public class halamanpendapatanperhari extends javax.swing.JFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "id_pesanan", "tanggal", "cashier", "total"
             }
-        ));
-        jScrollPane1.setViewportView(jTable1);
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane1.setViewportView(jtabeltrnsksi);
 
         jButton2.setBackground(new java.awt.Color(204, 204, 204));
         jButton2.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
@@ -215,9 +327,14 @@ public class halamanpendapatanperhari extends javax.swing.JFrame {
         jButton5.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         jButton5.setText("cetak");
 
-        jButton6.setBackground(new java.awt.Color(204, 204, 204));
-        jButton6.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        jButton6.setText("Kembali");
+        jtombolkembalipendap.setBackground(new java.awt.Color(204, 204, 204));
+        jtombolkembalipendap.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        jtombolkembalipendap.setText("Kembali");
+        jtombolkembalipendap.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jtombolkembalipendapActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -261,7 +378,7 @@ public class halamanpendapatanperhari extends javax.swing.JFrame {
                     .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButton4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jButton5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jButton6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jtombolkembalipendap, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
@@ -297,7 +414,7 @@ public class halamanpendapatanperhari extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(jButton5)
                         .addGap(18, 18, 18)
-                        .addComponent(jButton6))
+                        .addComponent(jtombolkembalipendap))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 277, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(156, 156, 156))
         );
@@ -352,6 +469,11 @@ public class halamanpendapatanperhari extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton2ActionPerformed
 
+    private void jtombolkembalipendapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtombolkembalipendapActionPerformed
+        // TODO add your handling code here:
+        this.setVisible(false);
+    }//GEN-LAST:event_jtombolkembalipendapActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -383,7 +505,6 @@ public class halamanpendapatanperhari extends javax.swing.JFrame {
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -400,11 +521,12 @@ public class halamanpendapatanperhari extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
-    private javax.swing.JTextField jTextField3;
-    private javax.swing.JTextField jTextField4;
-    private javax.swing.JTextField jTextField5;
+    private javax.swing.JTable jtabeltrnsksi;
+    private javax.swing.JButton jtombolkembalipendap;
+    private javax.swing.JTextField txtjmlhtrnskhrtd;
+    private javax.swing.JTextField txtmenuterlrshrini;
+    private javax.swing.JTextField txtpemasukanhariini;
     // End of variables declaration//GEN-END:variables
 }
