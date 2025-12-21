@@ -142,9 +142,17 @@ public class halamannota extends javax.swing.JFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Menu", "Qty", "Harga", "Sub total"
             }
-        ));
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         jScrollPane1.setViewportView(jtabelpembelianpr);
 
         jButtoncetakstruk.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N

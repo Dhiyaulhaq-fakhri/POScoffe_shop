@@ -7,7 +7,6 @@
  *
  * @author Lenovo
  */
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -24,7 +23,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 public class halamanpendapatanperhari extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(halamanpendapatanperhari.class.getName());
 
     /**
@@ -33,94 +32,82 @@ public class halamanpendapatanperhari extends javax.swing.JFrame {
     public halamanpendapatanperhari() {
         initComponents();
         setLocationRelativeTo(null);
-        
+
         loadTotalPemasukanHariIni();
         loadJumlahTransaksiHariIni();
         loadMenuTerlarisHariIni();
         loadTabelTransaksiHariIni();
     }
 
-    
     public void loadTotalPemasukanHariIni() {
-    String sql = "SELECT SUM(total) AS total FROM pesanan WHERE DATE(tanggal) = CURDATE()";
+        String sql = "SELECT SUM(total) AS total FROM pesanan WHERE DATE(tanggal) = CURDATE()";
 
-    try (Connection conn = koneksi.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql);
-         ResultSet rs = ps.executeQuery()) {
+        try (Connection conn = koneksi.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
-        if (rs.next()) {
-            double total = rs.getDouble("total");
-            txtpemasukanhariini.setText(String.valueOf(total));
+            if (rs.next()) {
+                double total = rs.getDouble("total");
+                txtpemasukanhariini.setText(String.valueOf(total));
+            }
+        } catch (Exception e) {
+            System.out.println("Error total pemasukan: " + e.getMessage());
         }
-    } catch (Exception e) {
-        System.out.println("Error total pemasukan: " + e.getMessage());
     }
-}
-    
+
     public void loadJumlahTransaksiHariIni() {
-    String sql = "SELECT COUNT(*) AS jml FROM pesanan WHERE DATE(tanggal) = CURDATE()";
+        String sql = "SELECT COUNT(*) AS jml FROM pesanan WHERE DATE(tanggal) = CURDATE()";
 
-    try (Connection conn = koneksi.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql);
-         ResultSet rs = ps.executeQuery()) {
+        try (Connection conn = koneksi.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
-        if (rs.next()) {
-            txtjmlhtrnskhrtd.setText(String.valueOf(rs.getInt("jml")));
+            if (rs.next()) {
+                txtjmlhtrnskhrtd.setText(String.valueOf(rs.getInt("jml")));
+            }
+        } catch (Exception e) {
+            System.out.println("Error jumlah transaksi: " + e.getMessage());
         }
-    } catch (Exception e) {
-        System.out.println("Error jumlah transaksi: " + e.getMessage());
     }
-}
-    
+
     public void loadMenuTerlarisHariIni() {
-    String sql = 
-        "SELECT p.nama, SUM(d.jumlah) AS total_qty " +
-        "FROM detail_pesanan d " +
-        "JOIN pesanan ps ON d.id_pesanan = ps.id_pesanan " +
-        "JOIN produk p ON d.id_produk = p.id_produk " +
-        "WHERE DATE(ps.tanggal) = CURDATE() " +
-        "GROUP BY p.id_produk " +
-        "ORDER BY total_qty DESC LIMIT 1";
+        String sql
+                = "SELECT p.nama, SUM(d.jumlah) AS total_qty "
+                + "FROM detail_pesanan d "
+                + "JOIN pesanan ps ON d.id_pesanan = ps.id_pesanan "
+                + "JOIN produk p ON d.id_produk = p.id_produk "
+                + "WHERE DATE(ps.tanggal) = CURDATE() "
+                + "GROUP BY p.id_produk "
+                + "ORDER BY total_qty DESC LIMIT 1";
 
-    try (Connection conn = koneksi.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql);
-         ResultSet rs = ps.executeQuery()) {
+        try (Connection conn = koneksi.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
-        if (rs.next()) {
-            txtmenuterlrshrini.setText(rs.getString("nama"));
-        } else {
-            txtmenuterlrshrini.setText("-");
+            if (rs.next()) {
+                txtmenuterlrshrini.setText(rs.getString("nama"));
+            } else {
+                txtmenuterlrshrini.setText("-");
+            }
+        } catch (Exception e) {
+            System.out.println("Error menu terlaris: " + e.getMessage());
         }
-    } catch (Exception e) {
-        System.out.println("Error menu terlaris: " + e.getMessage());
     }
-}
-    
+
     public void loadTabelTransaksiHariIni() {
-    String sql = "SELECT id_pesanan, tanggal, cashier, total FROM pesanan WHERE DATE(tanggal) = CURDATE()";
+        String sql = "SELECT id_pesanan, tanggal, cashier, total FROM pesanan WHERE DATE(tanggal) = CURDATE()";
 
-    DefaultTableModel model = (DefaultTableModel) jtabeltrnsksi.getModel();
-    model.setRowCount(0);
+        DefaultTableModel model = (DefaultTableModel) jtabeltrnsksi.getModel();
+        model.setRowCount(0);
 
-    try (Connection conn = koneksi.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql);
-         ResultSet rs = ps.executeQuery()) {
+        try (Connection conn = koneksi.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
-        while (rs.next()) {
-            model.addRow(new Object[]{
-                rs.getInt("id_pesanan"),
-                rs.getString("tanggal"),
-                rs.getString("cashier"),
-                rs.getDouble("total")
-            });
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    rs.getInt("id_pesanan"),
+                    rs.getString("tanggal"),
+                    rs.getString("cashier"),
+                    rs.getDouble("total")
+                });
+            }
+        } catch (Exception e) {
+            System.out.println("Error load tabel transaksi: " + e.getMessage());
         }
-    } catch (Exception e) {
-        System.out.println("Error load tabel transaksi: " + e.getMessage());
     }
-}
-
-
-
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -467,6 +454,20 @@ public class halamanpendapatanperhari extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
+        int row = jtabeltrnsksi.getSelectedRow();
+        if (row == -1) {
+            JOptionPane.showMessageDialog(this, "Pilih transaksi dulu!");
+            return;
+        }
+
+        int idPesanan = Integer.parseInt(
+                jtabeltrnsksi.getValueAt(row, 0).toString()
+        );
+
+        notaterbukaterpilih nota = new notaterbukaterpilih(idPesanan);
+        nota.setVisible(true);
+
+
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jtombolkembalipendapActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jtombolkembalipendapActionPerformed

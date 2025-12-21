@@ -1,21 +1,91 @@
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.awt.HeadlessException;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableColumn;
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
-
 /**
  *
  * @author Lenovo
  */
 public class notaterbukaterpilih extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(notaterbukaterpilih.class.getName());
+
+    private Connection conn;
 
     /**
      * Creates new form notaterbukaterpilih
      */
-    public notaterbukaterpilih() {
+    public notaterbukaterpilih(int idPesanan) {
         initComponents();
+        try {
+            conn = koneksi.getConnection();
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Gagal koneksi ke database",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        loadHeader(idPesanan);
+        loadItem(idPesanan);
+    }
+
+    private void loadHeader(int idPesanan) {
+        String sql = "SELECT tanggal, total "
+                + "FROM pesanan WHERE id_pesanan=?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, idPesanan);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                txttanggalhariitu.setText(rs.getString("tanggal"));
+                txttotallewat.setText(rs.getString("total"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void loadItem(int idPesanan) {
+
+        DefaultTableModel model
+                = (DefaultTableModel) tabelresiberlalu.getModel();
+        model.setRowCount(0);
+
+        String sql
+                = "SELECT p.nama, d.jumlah, d.harga "
+                + "FROM detail_pesanan d "
+                + "JOIN produk p ON d.id_produk = p.id "
+                + "WHERE d.id_pesanan=?";
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, idPesanan);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    rs.getString("nama"), // sesuai SELECT
+                    rs.getInt("jumlah"),
+                    rs.getDouble("harga")
+                });
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -40,7 +110,7 @@ public class notaterbukaterpilih extends javax.swing.JFrame {
         txttanggalhariitu = new javax.swing.JTextField();
         jSeparator1 = new javax.swing.JSeparator();
         jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        btnkembalihlmnt = new javax.swing.JButton();
         txttotallewat = new javax.swing.JTextField();
         txtuangkonsumenlewat = new javax.swing.JTextField();
         txtkembalianberlalu = new javax.swing.JTextField();
@@ -93,8 +163,13 @@ public class notaterbukaterpilih extends javax.swing.JFrame {
         jButton1.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         jButton1.setText("Cetak");
 
-        jButton2.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        jButton2.setText("Kembali");
+        btnkembalihlmnt.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        btnkembalihlmnt.setText("Kembali");
+        btnkembalihlmnt.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnkembalihlmntActionPerformed(evt);
+            }
+        });
 
         txttotallewat.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
 
@@ -141,7 +216,7 @@ public class notaterbukaterpilih extends javax.swing.JFrame {
                 .addGap(55, 55, 55)
                 .addComponent(jButton1)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton2)
+                .addComponent(btnkembalihlmnt)
                 .addGap(77, 77, 77))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -182,7 +257,7 @@ public class notaterbukaterpilih extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
-                    .addComponent(jButton2))
+                    .addComponent(btnkembalihlmnt))
                 .addContainerGap(14, Short.MAX_VALUE))
         );
 
@@ -206,34 +281,39 @@ public class notaterbukaterpilih extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnkembalihlmntActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnkembalihlmntActionPerformed
+        // TODO add your handling code here:
+        this.dispose();
+    }//GEN-LAST:event_btnkembalihlmntActionPerformed
+
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new notaterbukaterpilih().setVisible(true));
-    }
+//    public static void main(String args[]) {
+//        /* Set the Nimbus look and feel */
+//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+//         */
+//        try {
+//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                if ("Nimbus".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    break;
+//                }
+//            }
+//        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
+//            logger.log(java.util.logging.Level.SEVERE, null, ex);
+//        }
+//        //</editor-fold>
+//
+//        /* Create and display the form */
+//        java.awt.EventQueue.invokeLater(() -> new notaterbukaterpilih(idPesanan).setVisible(true));
+//    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnkembalihlmnt;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;

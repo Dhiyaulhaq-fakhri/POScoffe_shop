@@ -24,12 +24,8 @@ import java.time.format.DateTimeFormatter;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-
-
-
-
 public class halamanutama extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(halamanutama.class.getName());
 
     /**
@@ -41,24 +37,35 @@ public class halamanutama extends javax.swing.JFrame {
     DefaultTableModel model;
 
 
-    
-    
     public halamanutama() {
         initComponents();
         // Tampilkan form di tengah layar
         setLocationRelativeTo(null);
+
+        try {
+            conn = koneksi.getConnection();   // ==== WAJIB ====
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         loadProfileImage();
         tampilkanNomorOrder();
         setTanggalDenganJam();
 
         // === Tambahkan gambar profil ke tombol ===
     }
+
     public halamanutama(String username, String nama) {
         initComponents();
         setLocationRelativeTo(null);
+        try {
+            conn = koneksi.getConnection();   // ==== WAJIB ====
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         tampilkanNomorOrder();
         setTanggalDenganJam();
-        
+
         model = new DefaultTableModel();
         model.addColumn("Kode");
         model.addColumn("Nama Barang");
@@ -81,13 +88,13 @@ public class halamanutama extends javax.swing.JFrame {
 
         this.username = username;
         this.nama = nama;
-        
+
         txtdisplaynama.setText(nama);
         txtdisplaynama.setEditable(false);
-        
+
         txtkasir.setText(nama);
         txtkasir.setEditable(false);
-        
+
         // textfield tidak boleh di edit
         txtnoorder.setEditable(false);
         txttanggal.setEditable(false);
@@ -97,30 +104,27 @@ public class halamanutama extends javax.swing.JFrame {
         txtnamabarang.setEditable(false);
         txtstok.setEditable(false);
         txthargasatuan.setEditable(false);
-        
+
         txtdiskon.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-            hitungTotalAkhir();
+                hitungTotalAkhir();
             }
         });
 
         txtbayar.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-            hitungKembalian();
+                hitungKembalian();
             }
         });
 
-        
         // Tampilkan juga foto profil agar tidak hilang
         loadProfileImage();
     }
-    
-    
-    
-    private void loadProfileImage(){
-            java.net.URL imgURL = getClass().getResource("/images/Userpfpconvert.jpg");
+
+    private void loadProfileImage() {
+        java.net.URL imgURL = getClass().getResource("/images/Userpfpconvert.jpg");
         if (imgURL != null) {
             ImageIcon icon = new ImageIcon(imgURL);
             // Resize gambar agar pas dengan tombol
@@ -132,269 +136,259 @@ public class halamanutama extends javax.swing.JFrame {
     }
 
     public String generateNomorNota() {
-    String nomorBaru = "";
+        String nomorBaru = "";
 
-    String sql = "SELECT id_pesanan FROM pesanan " +
-                 "WHERE DATE(tanggal) = CURDATE() " +
-                 "ORDER BY id_pesanan DESC LIMIT 1";
+        String sql = "SELECT id_pesanan FROM pesanan "
+                + "WHERE DATE(tanggal) = CURDATE() "
+                + "ORDER BY id_pesanan DESC LIMIT 1";
 
-    try (Connection conn = koneksi.getConnection();
-         PreparedStatement ps = conn.prepareStatement(sql);
-         ResultSet rs = ps.executeQuery()) {
+        try (Connection conn = koneksi.getConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
-        // Format tanggal: YYYYMMDD
-        String today = java.time.LocalDate.now().toString().replace("-", "");
+            // Format tanggal: YYYYMMDD
+            String today = java.time.LocalDate.now().toString().replace("-", "");
 
-        int urutan = 1;
+            int urutan = 1;
 
-        if (rs.next()) {
-            int idTerakhir = rs.getInt("id_pesanan");
-            urutan = idTerakhir + 1;
+            if (rs.next()) {
+                int idTerakhir = rs.getInt("id_pesanan");
+                urutan = idTerakhir + 1;
+            }
+
+            nomorBaru = today + "-" + String.format("%03d", urutan);
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        nomorBaru = today + "-" + String.format("%03d", urutan);
-
-    } catch (Exception e) {
-        e.printStackTrace();
+        return nomorBaru;
     }
-
-    return nomorBaru;
-}
 
     public void tampilkanNomorOrder() {
-    String nomor = generateNomorNota();
-    txtnoorder.setText(nomor);
-}
-
+        String nomor = generateNomorNota();
+        txtnoorder.setText(nomor);
+    }
 
     private void cariBarang() {
-    String kode = txtkodebarang.getText().trim();
-    if (kode.isEmpty()) {
-        return; // kalau kosong, tidak usah query
-    }
-
-    try {
-        String sql = "SELECT nama, jenis, harga, stok FROM produk WHERE id_produk = ?";
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ps.setString(1, kode);
-        ResultSet rs = ps.executeQuery();
-
-        if (rs.next()) {
-            txtnamabarang.setText(rs.getString("nama"));
-            txtstok.setText(rs.getString("stok"));
-            txthargasatuan.setText(rs.getString("harga"));
-        } else {
-            // kalau kode tidak ditemukan
-            txtnamabarang.setText("");
-            txtstok.setText("");
-            txthargasatuan.setText("");
+        String kode = txtkodebarang.getText().trim();
+        if (kode.isEmpty()) {
+            return; // kalau kosong, tidak usah query
         }
-
-    } catch (SQLException e) {
-        JOptionPane.showMessageDialog(this, "Error : " + e.getMessage());
-    }
-}
-    
-    private void setTanggalDenganJam() {
-    LocalDateTime now = LocalDateTime.now();
-    DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
-    txttanggal.setText(now.format(format));
-}
-    
-    private void hitungPratinjauTotal() {
-    try {
-        String hargaText = txthargasatuan.getText().trim();
-        String jumlahText = txtjumlahjual.getText().trim();
-
-        if (hargaText.isEmpty() || jumlahText.isEmpty()) {
-            txthargaakhir.setText(""); 
-            return;
-        }
-
-        double harga = Double.parseDouble(hargaText);
-        int jumlah = Integer.parseInt(jumlahText);
-
-        double total = harga * jumlah;
-
-        txthargaakhir.setText(String.valueOf(total));
-
-    } catch (NumberFormatException e) {
-        txthargaakhir.setText("0");
-    }
-}
-    
-    private void hitungSubtotal() {
-    int rowCount = jTabelpembelian.getRowCount();
-    double subtotal = 0;
-
-    for (int i = 0; i < rowCount; i++) {
-        Object nilai = jTabelpembelian.getValueAt(i, 4); // kolom total harga
-        if (nilai != null) {
-            subtotal += Double.parseDouble(nilai.toString());
-        }
-    }
-
-    txtsubtotal.setText(String.valueOf((int) subtotal));
-}
-    
-    private void hitungTotalAkhir() {
-    double subtotal = 0;
-    double diskonPersen = 0;
-
-    // Ambil subtotal
-    if (!txtsubtotal.getText().isEmpty()) {
-        subtotal = Double.parseDouble(txtsubtotal.getText());
-    }
-
-    // Ambil diskon (jika kosong, tetap 0)
-    if (!txtdiskon.getText().isEmpty()) {
-        diskonPersen = Double.parseDouble(txtdiskon.getText());
-    }
-
-    // Hitung potongan
-    double potongan = subtotal * (diskonPersen / 100);
-
-    // Hitung total akhir
-    double totalAkhir = subtotal - potongan;
-
-    // Tampilkan
-    txttotalakhir.setText(String.valueOf((int) totalAkhir));
-}
-
-    
-    private void hitungKembalian() {
-    try {
-        double totalAkhir = Double.parseDouble(txttotalakhir.getText());
-        double uangPembeli = Double.parseDouble(txtbayar.getText());
-
-        double kembalian = uangPembeli - totalAkhir;
-
-        // kalau negatif jadikan 0 saja biar rapi
-        if (kembalian < 0) {
-            txtkembalian.setText("0");
-        } else {
-            txtkembalian.setText(String.valueOf(kembalian));
-        }
-
-    } catch (Exception e) {
-        // kalau textfield kosong atau bukan angka
-        txtkembalian.setText("0");
-    }
-}
-    private void checkout() {
-    Connection conn = null;
-    PreparedStatement pstPesanan = null;
-    PreparedStatement pstDetail = null;
-
-    try {
-        conn = koneksi.getConnection();
-        conn.setAutoCommit(false);
-
-        // Ambil data penting
-        double totalAkhir = Double.parseDouble(txttotalakhir.getText());
-        String kasir = txtkasir.getText();
-        String nomorNota = txtnoorder.getText(); // nomor nota buatanmu (tanggal + jam)
-
-        // ============================
-        // 1. INSERT PESANAN
-        // ============================
-        String sqlPesanan = "INSERT INTO pesanan (tanggal, total, cashier) VALUES (NOW(), ?, ?)";
-        pstPesanan = conn.prepareStatement(sqlPesanan, Statement.RETURN_GENERATED_KEYS);
-
-        pstPesanan.setDouble(1, totalAkhir);
-        pstPesanan.setString(2, kasir);
-        pstPesanan.executeUpdate();
-
-        // Ambil id_pesanan (PRIMARY KEY)
-        ResultSet rs = pstPesanan.getGeneratedKeys();
-        int idPesanan = 0;
-        if (rs.next()) {
-            idPesanan = rs.getInt(1);
-        }
-
-        // ============================
-        // 2. INSERT DETAIL PESANAN
-        // ============================
-        String sqlDetail = "INSERT INTO detail_pesanan (id_pesanan, id_produk, jumlah, harga_satuan) VALUES (?, ?, ?, ?)";
-        pstDetail = conn.prepareStatement(sqlDetail);
-
-        DefaultTableModel model = (DefaultTableModel) jTabelpembelian.getModel();
-
-        for (int i = 0; i < model.getRowCount(); i++) {
-            pstDetail.setInt(1, idPesanan);
-            pstDetail.setInt(2, Integer.parseInt(model.getValueAt(i, 0).toString()));
-            pstDetail.setInt(3, Integer.parseInt(model.getValueAt(i, 2).toString()));
-            pstDetail.setDouble(4, Double.parseDouble(model.getValueAt(i, 3).toString()));
-            pstDetail.addBatch();
-        }
-
-        pstDetail.executeBatch();
-
-        // ============================
-        // 3. UPDATE STOK PRODUK
-        // ============================
-        for (int i = 0; i < model.getRowCount(); i++) {
-
-            int idProduk = Integer.parseInt(model.getValueAt(i, 0).toString());
-            int jumlah = Integer.parseInt(model.getValueAt(i, 2).toString());
-
-            String sqlStok = "UPDATE produk SET stok = stok - ? WHERE id_produk = ?";
-            PreparedStatement pstStok = conn.prepareStatement(sqlStok);
-            pstStok.setInt(1, jumlah);
-            pstStok.setInt(2, idProduk);
-            pstStok.executeUpdate();
-        }
-
-        // ============================
-        // 4. COMMIT
-        // ============================
-        conn.commit();
-
-        JOptionPane.showMessageDialog(this, "Transaksi berhasil disimpan!");
-
-        // ============================
-        // 5. BUKA HALAMAN NOTA
-        // ============================
-        halamannota nota = new halamannota(
-                idPesanan,    // penting untuk load detail nota
-                nomorNota,    // nomor nota buatanmu
-                kasir,        // nama kasir
-                totalAkhir    // total pembayaran
-        );
-
-        nota.setVisible(true);
-
-        // ============================
-        // 6. BERSIHKAN FORM
-        // ============================
-        model.setRowCount(0);
-        txttotalakhir.setText("");
-        txtnoorder.setText("");  // boleh clear setelah dipakai
-
-    } catch (Exception e) {
 
         try {
-            if (conn != null) conn.rollback();
-        } catch (Exception ex) {}
+            String sql = "SELECT nama, jenis, harga, stok FROM produk WHERE id_produk = ?";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, kode);
+            ResultSet rs = ps.executeQuery();
 
-        JOptionPane.showMessageDialog(this, "Checkout gagal: " + e.getMessage());
+            if (rs.next()) {
+                txtnamabarang.setText(rs.getString("nama"));
+                txtstok.setText(rs.getString("stok"));
+                txthargasatuan.setText(rs.getString("harga"));
+            } else {
+                // kalau kode tidak ditemukan
+                txtnamabarang.setText("");
+                txtstok.setText("");
+                txthargasatuan.setText("");
+            }
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error : " + e.getMessage());
+        }
     }
-}
 
+    private void setTanggalDenganJam() {
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
+        txttanggal.setText(now.format(format));
+    }
 
+    private void hitungPratinjauTotal() {
+        try {
+            String hargaText = txthargasatuan.getText().trim();
+            String jumlahText = txtjumlahjual.getText().trim();
 
-    
+            if (hargaText.isEmpty() || jumlahText.isEmpty()) {
+                txthargaakhir.setText("");
+                return;
+            }
+
+            double harga = Double.parseDouble(hargaText);
+            int jumlah = Integer.parseInt(jumlahText);
+
+            double total = harga * jumlah;
+
+            txthargaakhir.setText(String.valueOf(total));
+
+        } catch (NumberFormatException e) {
+            txthargaakhir.setText("0");
+        }
+    }
+
+    private void hitungSubtotal() {
+        int rowCount = jTabelpembelian.getRowCount();
+        double subtotal = 0;
+
+        for (int i = 0; i < rowCount; i++) {
+            Object nilai = jTabelpembelian.getValueAt(i, 4); // kolom total harga
+            if (nilai != null) {
+                subtotal += Double.parseDouble(nilai.toString());
+            }
+        }
+
+        txtsubtotal.setText(String.valueOf((int) subtotal));
+    }
+
+    private void hitungTotalAkhir() {
+        double subtotal = 0;
+        double diskonPersen = 0;
+
+        // Ambil subtotal
+        if (!txtsubtotal.getText().isEmpty()) {
+            subtotal = Double.parseDouble(txtsubtotal.getText());
+        }
+
+        // Ambil diskon (jika kosong, tetap 0)
+        if (!txtdiskon.getText().isEmpty()) {
+            diskonPersen = Double.parseDouble(txtdiskon.getText());
+        }
+
+        // Hitung potongan
+        double potongan = subtotal * (diskonPersen / 100);
+
+        // Hitung total akhir
+        double totalAkhir = subtotal - potongan;
+
+        // Tampilkan
+        txttotalakhir.setText(String.valueOf((int) totalAkhir));
+    }
+
+    private void hitungKembalian() {
+        try {
+            double totalAkhir = Double.parseDouble(txttotalakhir.getText());
+            double uangPembeli = Double.parseDouble(txtbayar.getText());
+
+            double kembalian = uangPembeli - totalAkhir;
+
+            // kalau negatif jadikan 0 saja biar rapi
+            if (kembalian < 0) {
+                txtkembalian.setText("0");
+            } else {
+                txtkembalian.setText(String.valueOf(kembalian));
+            }
+
+        } catch (Exception e) {
+            // kalau textfield kosong atau bukan angka
+            txtkembalian.setText("0");
+        }
+    }
+
+    private void checkout() {
+        Connection conn = null;
+        PreparedStatement pstPesanan = null;
+        PreparedStatement pstDetail = null;
+
+        try {
+            conn = koneksi.getConnection();
+            conn.setAutoCommit(false);
+
+            // Ambil data penting
+            double totalAkhir = Double.parseDouble(txttotalakhir.getText());
+            String kasir = txtkasir.getText();
+            String nomorNota = txtnoorder.getText(); // nomor nota buatanmu (tanggal + jam)
+
+            // ============================
+            // 1. INSERT PESANAN
+            // ============================
+            String sqlPesanan = "INSERT INTO pesanan (tanggal, total, cashier) VALUES (NOW(), ?, ?)";
+            pstPesanan = conn.prepareStatement(sqlPesanan, Statement.RETURN_GENERATED_KEYS);
+
+            pstPesanan.setDouble(1, totalAkhir);
+            pstPesanan.setString(2, kasir);
+            pstPesanan.executeUpdate();
+
+            // Ambil id_pesanan (PRIMARY KEY)
+            ResultSet rs = pstPesanan.getGeneratedKeys();
+            int idPesanan = 0;
+            if (rs.next()) {
+                idPesanan = rs.getInt(1);
+            }
+
+            // ============================
+            // 2. INSERT DETAIL PESANAN
+            // ============================
+            String sqlDetail = "INSERT INTO detail_pesanan (id_pesanan, id_produk, jumlah, harga_satuan) VALUES (?, ?, ?, ?)";
+            pstDetail = conn.prepareStatement(sqlDetail);
+
+            DefaultTableModel model = (DefaultTableModel) jTabelpembelian.getModel();
+
+            for (int i = 0; i < model.getRowCount(); i++) {
+                pstDetail.setInt(1, idPesanan);
+                pstDetail.setInt(2, Integer.parseInt(model.getValueAt(i, 0).toString()));
+                pstDetail.setInt(3, Integer.parseInt(model.getValueAt(i, 2).toString()));
+                pstDetail.setDouble(4, Double.parseDouble(model.getValueAt(i, 3).toString()));
+                pstDetail.addBatch();
+            }
+
+            pstDetail.executeBatch();
+
+            // ============================
+            // 3. UPDATE STOK PRODUK
+            // ============================
+            for (int i = 0; i < model.getRowCount(); i++) {
+
+                int idProduk = Integer.parseInt(model.getValueAt(i, 0).toString());
+                int jumlah = Integer.parseInt(model.getValueAt(i, 2).toString());
+
+                String sqlStok = "UPDATE produk SET stok = stok - ? WHERE id_produk = ?";
+                PreparedStatement pstStok = conn.prepareStatement(sqlStok);
+                pstStok.setInt(1, jumlah);
+                pstStok.setInt(2, idProduk);
+                pstStok.executeUpdate();
+            }
+
+            // ============================
+            // 4. COMMIT
+            // ============================
+            conn.commit();
+
+            JOptionPane.showMessageDialog(this, "Transaksi berhasil disimpan!");
+
+            // ============================
+            // 5. BUKA HALAMAN NOTA
+            // ============================
+            halamannota nota = new halamannota(
+                    idPesanan, // penting untuk load detail nota
+                    nomorNota, // nomor nota buatanmu
+                    kasir, // nama kasir
+                    totalAkhir // total pembayaran
+            );
+
+            nota.setVisible(true);
+
+            // ============================
+            // 6. BERSIHKAN FORM
+            // ============================
+            model.setRowCount(0);
+            txttotalakhir.setText("");
+            txtnoorder.setText("");  // boleh clear setelah dipakai
+
+        } catch (Exception e) {
+
+            try {
+                if (conn != null) {
+                    conn.rollback();
+                }
+            } catch (Exception ex) {
+            }
+
+            JOptionPane.showMessageDialog(this, "Checkout gagal: " + e.getMessage());
+        }
+    }
+
     private void clearTable() {
-    DefaultTableModel model = (DefaultTableModel) jTabelpembelian.getModel();
-    model.setRowCount(0);
-}
-
-
-
-
-
-
-
+        DefaultTableModel model = (DefaultTableModel) jTabelpembelian.getModel();
+        model.setRowCount(0);
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -963,11 +957,11 @@ public class halamanutama extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private profiloption profilForm;
-    
+
     private void btnprofilActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnprofilActionPerformed
         // TODO add your handling code here:
         if (profilForm == null || !profilForm.isDisplayable()) {
-            profilForm = new profiloption(username, nama);    
+            profilForm = new profiloption(username, nama);
         }
         profilForm.setVisible(true);
     }//GEN-LAST:event_btnprofilActionPerformed
@@ -1013,8 +1007,6 @@ public class halamanutama extends javax.swing.JFrame {
         int jumlah = Integer.parseInt(txtjumlahjual.getText());
         double harga = Double.parseDouble(txthargasatuan.getText());
         double total = jumlah * harga;
-        
-        
 
         // Tambah baris baru
         model.addRow(new Object[]{
@@ -1024,7 +1016,7 @@ public class halamanutama extends javax.swing.JFrame {
             harga,
             total
         });
-        
+
         hitungSubtotal();
 
     }//GEN-LAST:event_jButtonsimpanActionPerformed
@@ -1032,7 +1024,7 @@ public class halamanutama extends javax.swing.JFrame {
     private void jButtonhapusitemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonhapusitemActionPerformed
         // TODO add your handling code here:
         int selectedrow = jTabelpembelian.getSelectedRow();
-            
+
         if (selectedrow == -1) {
             JOptionPane.showMessageDialog(this, "Pilih item yang mau dihapus!");
             return;
@@ -1040,10 +1032,10 @@ public class halamanutama extends javax.swing.JFrame {
 
         // Konfirmasi
         int confirm = JOptionPane.showConfirmDialog(
-            this,
-            "Hapus item yang dipilih?",
-            "Konfirmasi",
-            JOptionPane.YES_NO_OPTION
+                this,
+                "Hapus item yang dipilih?",
+                "Konfirmasi",
+                JOptionPane.YES_NO_OPTION
         );
 
         if (confirm == JOptionPane.YES_OPTION) {
@@ -1056,14 +1048,14 @@ public class halamanutama extends javax.swing.JFrame {
     private void jButtonresetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonresetActionPerformed
         // TODO add your handling code here:
         int confirm = JOptionPane.showConfirmDialog(
-            this,
-            "Hapus semua item dari tabel?",
-            "konfirmasi reset",
-            JOptionPane.YES_NO_OPTION
+                this,
+                "Hapus semua item dari tabel?",
+                "konfirmasi reset",
+                JOptionPane.YES_NO_OPTION
         );
-        
+
         if (confirm == JOptionPane.YES_OPTION) {
-        
+
             model = new DefaultTableModel();
             model.addColumn("Kode");
             model.addColumn("Nama Barang");
@@ -1072,8 +1064,8 @@ public class halamanutama extends javax.swing.JFrame {
             model.addColumn("Total");
 
             jTabelpembelian.setModel(model);
-            
-        hitungSubtotal();
+
+            hitungSubtotal();
 
         }
     }//GEN-LAST:event_jButtonresetActionPerformed
@@ -1096,8 +1088,6 @@ public class halamanutama extends javax.swing.JFrame {
         halamanpendapatanperhari pendaphar = new halamanpendapatanperhari();
         pendaphar.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
-
-
 
     /**
      * @param args the command line arguments
