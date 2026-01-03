@@ -38,6 +38,30 @@ public class penjualanperitem extends javax.swing.JFrame {
         }
 
         txtnmbrng.setEditable(false);
+        setupTable();
+        setupEvent();
+    }
+
+    private void setupTable() {
+        tblriwayatproduk.setModel(new DefaultTableModel(
+                new Object[][]{},
+                new String[]{
+                    "Tanggal",
+                    "ID Pesanan",
+                    "Jumlah",
+                    "Harga Satuan",
+                    "Subtotal"
+                }
+        ) {
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        });
+    }
+
+    private void setupEvent() {
+        // Tekan ENTER pada kode barang
+        txtkdbrng.addActionListener(e -> cariProduk());
     }
 
     private void cariProduk() {

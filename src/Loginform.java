@@ -145,15 +145,18 @@ public class Loginform extends javax.swing.JFrame {
                 String usernameDb = rs.getString("username");      // kolom username di tabel kamu
                 String nama = rs.getString("nama");       // ubah sesuai nama kolom di tabelmu
                 String posisi = rs.getString("posisi");
-                
+
                 javax.swing.JOptionPane.showMessageDialog(this, "Login berhasil!");
-                
+
                 if ("admin".equalsIgnoreCase(posisi)) {
-                adminpanel adminPage = new adminpanel(usernameDb, nama);
-                adminPage.setVisible(true);
+                    adminpanel adminPage = new adminpanel(usernameDb, nama);
+                    adminPage.setVisible(true);
+                } else if ("owner".equalsIgnoreCase(posisi)) {
+                    lamanpemilik lmown = new lamanpemilik(usernameDb, nama);
+                    lmown.setVisible(true);
                 } else {
-                halamanutama mainPage = new halamanutama(usernameDb, nama);
-                mainPage.setVisible(true);
+                    halamanutama mainPage = new halamanutama(usernameDb, nama);
+                    mainPage.setVisible(true);
                 }
                 this.dispose();
             } else {
@@ -161,7 +164,7 @@ public class Loginform extends javax.swing.JFrame {
             }
         } catch (HeadlessException | SQLException e) {
             javax.swing.JOptionPane.showMessageDialog(this, "Terjadi kesalahan: " + e.getMessage());
-        }   
+        }
     }//GEN-LAST:event_loginbuttonActionPerformed
 
     /**
