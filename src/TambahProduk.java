@@ -81,7 +81,7 @@ public class TambahProduk extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jPanel2.setBackground(new java.awt.Color(0, 255, 153));
+        jPanel2.setBackground(new java.awt.Color(0, 204, 255));
 
         jLabel7.setFont(new java.awt.Font("SansSerif", 0, 24)); // NOI18N
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);

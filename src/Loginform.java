@@ -1,6 +1,10 @@
 
+import javax.swing.ImageIcon;
+import java.awt.Image;
 import java.awt.HeadlessException;
+import java.awt.Image;
 import java.sql.SQLException;
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 
 /*
@@ -21,6 +25,20 @@ public class Loginform extends javax.swing.JFrame {
     public Loginform() {
         initComponents();
         setLocationRelativeTo(null);
+        loadPoster();
+    }
+
+    private void loadPoster() {
+        java.net.URL imgURL = getClass().getResource("/images/poster1.jpeg");
+        if (imgURL != null) {
+            ImageIcon icon = new ImageIcon(imgURL);
+            Image scaled = icon.getImage().getScaledInstance(
+                    posterlabel.getWidth(),
+                    posterlabel.getHeight(),
+                    Image.SCALE_SMOOTH
+            );
+            posterlabel.setIcon(new ImageIcon(scaled));
+        }
     }
 
     /**
@@ -39,10 +57,12 @@ public class Loginform extends javax.swing.JFrame {
         txtusername = new javax.swing.JTextField();
         txtpassword = new javax.swing.JPasswordField();
         loginbutton = new javax.swing.JButton();
+        imgpanel = new javax.swing.JPanel();
+        posterlabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jPanel1.setBackground(new java.awt.Color(0, 153, 153));
+        jPanel1.setBackground(new java.awt.Color(0, 204, 255));
         jPanel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED, new java.awt.Color(255, 255, 255), java.awt.Color.white, java.awt.Color.white, java.awt.Color.white));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
@@ -108,17 +128,32 @@ public class Loginform extends javax.swing.JFrame {
                 .addGap(75, 75, 75))
         );
 
+        imgpanel.setBackground(new java.awt.Color(255, 255, 255));
+
+        javax.swing.GroupLayout imgpanelLayout = new javax.swing.GroupLayout(imgpanel);
+        imgpanel.setLayout(imgpanelLayout);
+        imgpanelLayout.setHorizontalGroup(
+            imgpanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(posterlabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 137, Short.MAX_VALUE)
+        );
+        imgpanelLayout.setVerticalGroup(
+            imgpanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(posterlabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 110, Short.MAX_VALUE)
+                .addComponent(imgpanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(imgpanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -192,11 +227,13 @@ public class Loginform extends javax.swing.JFrame {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel imgpanel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JButton loginbutton;
+    private javax.swing.JLabel posterlabel;
     private javax.swing.JPasswordField txtpassword;
     private javax.swing.JTextField txtusername;
     // End of variables declaration//GEN-END:variables

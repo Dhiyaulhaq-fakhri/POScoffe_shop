@@ -1,4 +1,5 @@
 
+import org.jfree.chart.renderer.category.StandardBarPainter;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -48,6 +49,7 @@ public class lamanpemilik extends javax.swing.JFrame {
      */
     public lamanpemilik() {
         initComponents();
+        setLocationRelativeTo(null);
 
         //    Test
         dataset.addValue(800, "Transaksi", "Januari");
@@ -69,6 +71,16 @@ public class lamanpemilik extends javax.swing.JFrame {
                 "Jumlah",
                 dataset
         );
+
+        // Ambil plot
+        CategoryPlot plot = chart.getCategoryPlot();
+
+        // Ambil renderer
+        BarRenderer renderer = (BarRenderer) plot.getRenderer();
+
+        // Set warna bar (biru)
+        renderer.setSeriesPaint(0, new Color(52, 152, 219)); // biru soft
+        // renderer.setSeriesPaint(0, Color.BLUE); // biru standar
 
         ChartPanel chartPanel = new ChartPanel(chart);
 
@@ -212,16 +224,15 @@ public class lamanpemilik extends javax.swing.JFrame {
                     "Gagal memuat pendapatan\n" + e.getMessage());
         }
     }
-    
-    private String formatAngka(double angka) {
-    DecimalFormat df = new DecimalFormat("#,###");
-    return df.format(angka);
-}
 
-    
+    private String formatAngka(double angka) {
+        DecimalFormat df = new DecimalFormat("#,###");
+        return df.format(angka);
+    }
+
     private void loadPerformaKasir(int bulan, int tahun) {
 
-    String sql = """
+        String sql = """
         SELECT 
             p.cashier,
             COUNT(p.id_pesanan) AS total_transaksi,
@@ -234,52 +245,50 @@ public class lamanpemilik extends javax.swing.JFrame {
         LIMIT 1
     """;
 
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
 
-        ps.setInt(1, bulan);
-        ps.setInt(2, tahun);
+            ps.setInt(1, bulan);
+            ps.setInt(2, tahun);
 
-        ResultSet rs = ps.executeQuery();
+            ResultSet rs = ps.executeQuery();
 
-        if (rs.next()) {
-            txtkasirterbaik.setText(rs.getString("cashier"));
-            txtmelakukantransaksi.setText(
-                String.valueOf(rs.getInt("total_transaksi"))
-            );
+            if (rs.next()) {
+                txtkasirterbaik.setText(rs.getString("cashier"));
+                txtmelakukantransaksi.setText(
+                        String.valueOf(rs.getInt("total_transaksi"))
+                );
 
 //            // Pendapatan (pakai formatter)
 //            txtpendapatankotor.setText(
 //                formatAngka(rs.getDouble("pendapatan"))
 //            );
+            } else {
+                txtkasirterbaik.setText("-");
+                txtmelakukantransaksi.setText("0");
+                txtpendapatankotor.setText("0");
+            }
 
-        } else {
-            txtkasirterbaik.setText("-");
-            txtmelakukantransaksi.setText("0");
-            txtpendapatankotor.setText("0");
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error performa kasir:\n" + e.getMessage()
+            );
         }
-
-    } catch (SQLException e) {
-        JOptionPane.showMessageDialog(this,
-            "Error performa kasir:\n" + e.getMessage()
-        );
     }
-}
-    
+
     private void loadChartPenjualanTahunan(int tahun) {
 
-    // Dataset
-    DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+        DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 
-    String[] bulan = {
-        "Jan","Feb","Mar","Apr","Mei","Jun",
-        "Jul","Agu","Sep","Okt","Nov","Des"
-    };
+        String[] bulan = {
+            "Jan", "Feb", "Mar", "Apr", "Mei", "Jun",
+            "Jul", "Agu", "Sep", "Okt", "Nov", "Des"
+        };
 
-    for (String b : bulan) {
-        dataset.addValue(0, "Transaksi", b);
-    }
-    
-    String sql = """
+        for (String b : bulan) {
+            dataset.addValue(0, "Transaksi", b);
+        }
+
+        String sql = """
         SELECT 
             MONTH(tanggal) AS bulan,
             COUNT(id_pesanan) AS total
@@ -288,49 +297,62 @@ public class lamanpemilik extends javax.swing.JFrame {
         GROUP BY MONTH(tanggal)
     """;
 
-    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
 
-        ps.setInt(1, tahun);
-        ResultSet rs = ps.executeQuery();
+            ps.setInt(1, tahun);
+            ResultSet rs = ps.executeQuery();
 
-        while (rs.next()) {
-            int bln = rs.getInt("bulan"); // 1–12
-            int total = rs.getInt("total");
+            while (rs.next()) {
+                int bln = rs.getInt("bulan");
+                int total = rs.getInt("total");
 
-            dataset.setValue(
-                total,
-                "Transaksi",
-                bulan[bln - 1]
+                dataset.setValue(
+                        total,
+                        "Transaksi",
+                        bulan[bln - 1]
+                );
+            }
+
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(
+                    this,
+                    "Error load chart:\n" + e.getMessage()
             );
         }
 
-    } catch (SQLException e) {
-        JOptionPane.showMessageDialog(this,
-            "Error load chart:\n" + e.getMessage()
+        JFreeChart chart = ChartFactory.createBarChart(
+                "Penjualan Tahun " + tahun,
+                "Bulan",
+                "Jumlah Transaksi",
+                dataset,
+                PlotOrientation.VERTICAL,
+                false, true, false
         );
+
+        // STYLE CHART
+        CategoryPlot plot = chart.getCategoryPlot();
+        BarRenderer renderer = (BarRenderer) plot.getRenderer();
+
+        renderer.setSeriesPaint(0, new Color(52, 152, 219));
+        renderer.setShadowVisible(false);
+
+        plot.setBackgroundPaint(Color.WHITE);
+        plot.setRangeGridlinePaint(Color.GRAY);
+        plot.setOutlineVisible(false);
+
+        // TAMPILKAN
+        ChartPanel chartPanel = new ChartPanel(chart);
+        chartPanel.setPreferredSize(panelChart.getSize());
+        chartPanel.setMouseWheelEnabled(false);
+        chartPanel.setPopupMenu(null);
+
+        panelChart.removeAll();
+        panelChart.setLayout(new BorderLayout());
+        panelChart.add(chartPanel, BorderLayout.CENTER);
+        panelChart.revalidate();
+        panelChart.repaint();
+
     }
-
-    JFreeChart chart = ChartFactory.createBarChart(
-        "Penjualan Tahun " + tahun,
-        "Bulan",
-        "Jumlah Transaksi",
-        dataset,
-        PlotOrientation.VERTICAL,
-        false, true, false
-    );
-
-    // 6️⃣ Tampilkan ke JPanel
-    ChartPanel chartPanel = new ChartPanel(chart);
-    chartPanel.setPreferredSize(panelChart.getSize());
-
-    panelChart.removeAll();
-    panelChart.setLayout(new BorderLayout());
-    panelChart.add(chartPanel, BorderLayout.CENTER);
-    panelChart.revalidate();
-    panelChart.repaint();
-}
-
-
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -375,7 +397,7 @@ public class lamanpemilik extends javax.swing.JFrame {
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
-        jPanel2.setBackground(new java.awt.Color(51, 255, 102));
+        jPanel2.setBackground(new java.awt.Color(0, 204, 255));
 
         btnpfp3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -426,7 +448,7 @@ public class lamanpemilik extends javax.swing.JFrame {
             }
         });
 
-        jPanel3.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel3.setBackground(new java.awt.Color(102, 204, 255));
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
         jLabel2.setText("Produk terlaris");
@@ -485,7 +507,7 @@ public class lamanpemilik extends javax.swing.JFrame {
             .addGap(0, 0, Short.MAX_VALUE)
         );
 
-        jPanel5.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel5.setBackground(new java.awt.Color(102, 204, 255));
 
         jLabel4.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         jLabel4.setText("Produk terjual");
@@ -525,7 +547,7 @@ public class lamanpemilik extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanel6.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel6.setBackground(new java.awt.Color(102, 204, 255));
 
         jLabel6.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -563,7 +585,7 @@ public class lamanpemilik extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanel7.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel7.setBackground(new java.awt.Color(102, 204, 255));
 
         jLabel8.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         jLabel8.setText("Performa kasir");
@@ -610,7 +632,7 @@ public class lamanpemilik extends javax.swing.JFrame {
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jPanel8.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel8.setBackground(new java.awt.Color(0, 204, 255));
 
         panelChart.setBackground(new java.awt.Color(255, 255, 255));
 

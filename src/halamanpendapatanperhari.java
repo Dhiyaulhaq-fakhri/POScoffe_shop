@@ -161,6 +161,7 @@ public class halamanpendapatanperhari extends javax.swing.JFrame {
 
         jTextField2.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
 
+        jButton1.setBackground(new java.awt.Color(102, 204, 255));
         jButton1.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         jButton1.setText("Refresh");
 
@@ -293,7 +294,7 @@ public class halamanpendapatanperhari extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(jtabeltrnsksi);
 
-        jButton2.setBackground(new java.awt.Color(204, 204, 204));
+        jButton2.setBackground(new java.awt.Color(102, 204, 255));
         jButton2.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         jButton2.setText("Buka");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
@@ -302,19 +303,19 @@ public class halamanpendapatanperhari extends javax.swing.JFrame {
             }
         });
 
-        jButton3.setBackground(new java.awt.Color(204, 204, 204));
+        jButton3.setBackground(new java.awt.Color(102, 204, 255));
         jButton3.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         jButton3.setText("Simpan sebagai PDF");
 
-        jButton4.setBackground(new java.awt.Color(204, 204, 204));
+        jButton4.setBackground(new java.awt.Color(102, 204, 255));
         jButton4.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        jButton4.setText("simpan sebagai xlsx");
+        jButton4.setText("Simpan sebagai xlsx");
 
-        jButton5.setBackground(new java.awt.Color(204, 204, 204));
+        jButton5.setBackground(new java.awt.Color(102, 204, 255));
         jButton5.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
-        jButton5.setText("cetak");
+        jButton5.setText("Cetak");
 
-        jtombolkembalipendap.setBackground(new java.awt.Color(204, 204, 204));
+        jtombolkembalipendap.setBackground(new java.awt.Color(102, 204, 255));
         jtombolkembalipendap.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         jtombolkembalipendap.setText("Kembali");
         jtombolkembalipendap.addActionListener(new java.awt.event.ActionListener() {
@@ -406,7 +407,7 @@ public class halamanpendapatanperhari extends javax.swing.JFrame {
                 .addGap(156, 156, 156))
         );
 
-        jPanel3.setBackground(new java.awt.Color(176, 110, 0));
+        jPanel3.setBackground(new java.awt.Color(0, 204, 255));
 
         jLabel1.setFont(new java.awt.Font("SansSerif", 0, 18)); // NOI18N
         jLabel1.setText("Pemasukan");

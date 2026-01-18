@@ -7,7 +7,6 @@
  *
  * @author Lenovo
  */
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -18,66 +17,90 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableColumn;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class halamannota extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(halamannota.class.getName());
 
     /**
      * Creates new form halamannota
      */
-    public halamannota(int idPesanan, String nomorNota, String kasir, double total) {
+    public halamannota(int idPesanan, String nomorNota, String kasir, double total, String uang, String pelanggan, String kembalian) {
         initComponents();
-        
+
         txtnoorder.setText(nomorNota);
+        txtnomornota.setText(nomorNota);
         txtnamakasir.setText(kasir);
-        txtstrukdibayar.setText(String.valueOf(total));
-        
-        
+        txtstruktotalbayar.setText(String.valueOf(total));
+        txtstrukdibayar.setText(uang);
+        txtpelanggan.setText(pelanggan);
+        txtstrukkembalian.setText(kembalian);
+
         loadDataNota(idPesanan);
+        setTanggalDenganJam();
+//        hitungKembalian();
     }
 
-    
+    private void setTanggalDenganJam() {
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
+        txtdatetime.setText(now.format(format));
+    }
+//    private void hitungKembalian() {
+//    try {
+//        int totalBayar = Integer.parseInt(txtstruktotalbayar.getText());
+//        int uangCustomer = Integer.parseInt(txtstrukdibayar.getText());
+//
+//        int kembalian = uangCustomer - totalBayar;
+//        txtstrukkembalian.setText(
+//            kembalian >= 0 ? String.valueOf(kembalian) : "0"
+//        );
+//    } catch (NumberFormatException e) {
+//        txtstrukkembalian.setText("0");
+//    }
+//}
+
     private void loadDataNota(int idPesanan) {
-    try {
-        Connection conn = koneksi.getConnection();
+        try {
+            Connection conn = koneksi.getConnection();
 
-        String sql = "SELECT p.nama, d.jumlah, d.harga_satuan " +
-                     "FROM detail_pesanan d " +
-                     "JOIN produk p ON d.id_produk = p.id_produk " +
-                     "WHERE d.id_pesanan = ?";
+            String sql = "SELECT p.nama, d.jumlah, d.harga_satuan "
+                    + "FROM detail_pesanan d "
+                    + "JOIN produk p ON d.id_produk = p.id_produk "
+                    + "WHERE d.id_pesanan = ?";
 
-        PreparedStatement pst = conn.prepareStatement(sql);
-        pst.setInt(1, idPesanan);
+            PreparedStatement pst = conn.prepareStatement(sql);
+            pst.setInt(1, idPesanan);
 
-        ResultSet rs = pst.executeQuery();
+            ResultSet rs = pst.executeQuery();
 
-        DefaultTableModel model = (DefaultTableModel) jtabelpembelianpr.getModel();
-        model.setRowCount(0); // clear tabel sebelum isi
+            DefaultTableModel model = (DefaultTableModel) jtabelpembelianpr.getModel();
+            model.setRowCount(0); // clear tabel sebelum isi
 
-        while (rs.next()) {
-            String namaProduk = rs.getString("nama");
-            int jumlah = rs.getInt("jumlah");
-            double hargaSatuan = rs.getDouble("harga_satuan");
-            double subtotal = jumlah * hargaSatuan;
+            while (rs.next()) {
+                String namaProduk = rs.getString("nama");
+                int jumlah = rs.getInt("jumlah");
+                double hargaSatuan = rs.getDouble("harga_satuan");
+                double subtotal = jumlah * hargaSatuan;
 
-            model.addRow(new Object[]{
-                namaProduk,
-                jumlah,
-                hargaSatuan,
-                subtotal
-            });
+                model.addRow(new Object[]{
+                    namaProduk,
+                    jumlah,
+                    hargaSatuan,
+                    subtotal
+                });
+            }
+
+            rs.close();
+            pst.close();
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Gagal load data nota: " + e.getMessage());
         }
-
-        rs.close();
-        pst.close();
-
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(this, "Gagal load data nota: " + e.getMessage());
     }
-}
 
-    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -117,7 +140,9 @@ public class halamannota extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jPanel1.setBackground(new java.awt.Color(0, 255, 255));
+        jPanel1.setBackground(new java.awt.Color(0, 204, 255));
+
+        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
 
         jLabel1.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
@@ -234,6 +259,8 @@ public class halamannota extends javax.swing.JFrame {
                 .addContainerGap(39, Short.MAX_VALUE))
         );
 
+        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
+
         jLabel6.setBackground(new java.awt.Color(255, 255, 255));
         jLabel6.setFont(new java.awt.Font("Garamond", 1, 20)); // NOI18N
         jLabel6.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -281,6 +308,7 @@ public class halamannota extends javax.swing.JFrame {
         jLabel10.setText("Terima Kasih Atas Kunjungan Anda");
 
         txtdatetime.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
+        txtdatetime.setHorizontalAlignment(javax.swing.JTextField.CENTER);
         txtdatetime.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 txtdatetimeActionPerformed(evt);

@@ -67,9 +67,9 @@ public class notaterbukaterpilih extends javax.swing.JFrame {
         model.setRowCount(0);
 
         String sql
-                = "SELECT p.nama, d.jumlah, d.harga "
+                = "SELECT p.nama, d.jumlah, d.harga_satuan "
                 + "FROM detail_pesanan d "
-                + "JOIN produk p ON d.id_produk = p.id "
+                + "JOIN produk p ON d.id_produk = p.id_produk "
                 + "WHERE d.id_pesanan=?";
 
         try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -80,7 +80,7 @@ public class notaterbukaterpilih extends javax.swing.JFrame {
                 model.addRow(new Object[]{
                     rs.getString("nama"), // sesuai SELECT
                     rs.getInt("jumlah"),
-                    rs.getDouble("harga")
+                    rs.getDouble("harga_satuan")
                 });
             }
         } catch (Exception e) {
@@ -131,13 +131,13 @@ public class notaterbukaterpilih extends javax.swing.JFrame {
 
         tabelresiberlalu.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Item", "qty", "Total"
             }
         ));
         jScrollPane1.setViewportView(tabelresiberlalu);
