@@ -180,9 +180,11 @@ public class halamannota extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(jtabelpembelianpr);
 
+        jButtoncetakstruk.setBackground(new java.awt.Color(102, 204, 255));
         jButtoncetakstruk.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         jButtoncetakstruk.setText("Cetak Struk");
 
+        jtombolkmbl3.setBackground(new java.awt.Color(102, 204, 255));
         jtombolkmbl3.setFont(new java.awt.Font("SansSerif", 0, 14)); // NOI18N
         jtombolkmbl3.setText("Selesai");
         jtombolkmbl3.addActionListener(new java.awt.event.ActionListener() {
