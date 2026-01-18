@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 28, 2025 at 02:58 PM
+-- Generation Time: Jan 18, 2026 at 10:42 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -61,7 +61,29 @@ INSERT INTO `detail_pesanan` (`id_detail_pesanan`, `id_pesanan`, `id_produk`, `j
 (5, 3, 4, 3, 25000.00),
 (6, 3, 50, 2, 27000.00),
 (7, 4, 1, 1, 13000.00),
-(8, 4, 46, 3, 18000.00);
+(8, 4, 46, 3, 18000.00),
+(9, 5, 54, 1, 35000.00),
+(10, 5, 50, 1, 27000.00),
+(11, 5, 51, 15, 23000.00),
+(12, 6, 3, 2, 18000.00),
+(13, 7, 6, 2, 17000.00),
+(14, 8, 4, 2, 25000.00),
+(15, 9, 5, 1, 17000.00),
+(16, 10, 7, 1, 16000.00),
+(17, 11, 8, 2, 17000.00),
+(18, 12, 1, 1, 13000.00),
+(19, 13, 38, 2, 17000.00),
+(20, 13, 1, 1, 13000.00),
+(21, 13, 54, 1, 35000.00),
+(22, 13, 55, 2, 20000.00),
+(23, 14, 35, 4, 16000.00),
+(24, 14, 34, 2, 15000.00),
+(25, 14, 30, 1, 17000.00),
+(26, 14, 46, 2, 18000.00),
+(27, 14, 33, 2, 18000.00),
+(28, 14, 11, 2, 17000.00),
+(29, 15, 24, 1, 18000.00),
+(30, 15, 51, 2, 23000.00);
 
 -- --------------------------------------------------------
 
@@ -82,12 +104,12 @@ CREATE TABLE `karyawan` (
 --
 
 INSERT INTO `karyawan` (`id_karyawan`, `username`, `password_akun`, `nama`, `posisi`) VALUES
-(1, '1011', '121256', 'veby rokhmatul ambiya', 'manager'),
+(1, '1011', '121256', 'veby rokhmatul ambiya', 'owner'),
 (2, NULL, NULL, 'sujono wijayanto', 'waiters'),
 (3, NULL, NULL, 'alex morgan', 'barista'),
 (4, NULL, NULL, 'laila anjani', 'cook'),
-(5, 'fakhrifix', '6789', 'Dhiyaulhaq fakhri', 'admin'),
-(6, '2045', 'pentest', 'hauzan nabil', 'cook');
+(5, 'binary', '6789', 'Dhiyaulhaq fakhri', 'admin'),
+(6, '2045', 'pentest', 'hauzan nabil', 'kasir');
 
 -- --------------------------------------------------------
 
@@ -110,7 +132,18 @@ INSERT INTO `pesanan` (`id_pesanan`, `tanggal`, `total`, `cashier`) VALUES
 (1, '2025-11-26 20:29:42', 28500.00, 'hauzan nabil'),
 (2, '2025-11-26 20:31:05', 47500.00, 'hauzan nabil'),
 (3, '2025-11-26 21:44:26', 122550.00, 'hauzan nabil'),
-(4, '2025-11-28 20:00:46', 63650.00, 'hauzan nabil');
+(4, '2025-11-28 20:00:46', 63650.00, 'hauzan nabil'),
+(5, '2025-12-03 12:09:05', 402930.00, 'hauzan nabil'),
+(6, '2025-12-03 12:15:13', 34200.00, 'hauzan nabil'),
+(7, '2025-12-16 20:14:57', 32300.00, 'hauzan nabil'),
+(8, '2026-01-18 12:19:57', 45000.00, 'hauzan nabil'),
+(9, '2026-01-18 12:26:23', 16150.00, 'hauzan nabil'),
+(10, '2026-01-18 14:19:02', 15520.00, 'hauzan nabil'),
+(11, '2026-01-18 14:27:45', 32300.00, 'hauzan nabil'),
+(12, '2026-01-18 14:46:02', 12350.00, 'hauzan nabil'),
+(13, '2026-01-18 14:50:15', 109800.00, 'hauzan nabil'),
+(14, '2026-01-18 14:57:04', 206150.00, 'hauzan nabil'),
+(15, '2026-01-18 15:10:48', 60800.00, 'hauzan nabil');
 
 -- --------------------------------------------------------
 
@@ -131,17 +164,17 @@ CREATE TABLE `produk` (
 --
 
 INSERT INTO `produk` (`id_produk`, `nama`, `jenis`, `harga`, `stok`) VALUES
-(1, 'americano', 'coffee', 13000.00, 199),
+(1, 'americano', 'coffee', 13000.00, 197),
 (2, 'expresso', 'coffee', 12000.00, 199),
-(3, 'butterscot latte', 'coffee', 18000.00, 199),
-(4, 'permen kiss', 'permen', 25000.00, 17),
-(5, 'caramel latte', 'coffee', 17000.00, 200),
-(6, 'coconut latte', 'coffee', 17000.00, 200),
-(7, 'expresso machiato', 'coffee', 16000.00, 200),
-(8, 'pandan latte', 'coffee', 17000.00, 200),
+(3, 'butterscot latte', 'coffee', 18000.00, 197),
+(4, 'permen kiss', 'permen', 25000.00, 15),
+(5, 'caramel latte', 'coffee', 17000.00, 199),
+(6, 'coconut latte', 'coffee', 17000.00, 198),
+(7, 'expresso machiato', 'coffee', 16000.00, 199),
+(8, 'pandan latte', 'coffee', 17000.00, 198),
 (9, 'kopi klepon', 'coffee', 23000.00, 200),
 (10, 'vanilla latte', 'coffee', 17000.00, 200),
-(11, 'halsenut latte', 'coffee', 17000.00, 200),
+(11, 'halsenut latte', 'coffee', 17000.00, 198),
 (12, 'searah moody', 'coffee', 17000.00, 200),
 (13, 'pandan aren', 'coffee', 18000.00, 200),
 (14, 'v60', 'coffee', 18000.00, 200),
@@ -154,21 +187,21 @@ INSERT INTO `produk` (`id_produk`, `nama`, `jenis`, `harga`, `stok`) VALUES
 (21, 'melon squash', 'non_coffee', 19000.00, 200),
 (22, 'lemon squash', 'non_coffee', 19000.00, 200),
 (23, 'blue clouds', 'non_coffee', 18000.00, 200),
-(24, 'pink berry', 'non_coffee', 18000.00, 200),
+(24, 'pink berry', 'non_coffee', 18000.00, 199),
 (25, 'lemon tea', 'tea', 13000.00, 200),
 (26, 'thai tea', 'tea', 15000.00, 200),
 (27, 'berry girl', 'non_coffee', 18000.00, 200),
 (28, 'blue sky', 'non_coffee', 19000.00, 200),
 (29, 'cold man', 'non_coffee', 18000.00, 200),
-(30, 'matcha', 'non_coffee', 17000.00, 200),
+(30, 'matcha', 'non_coffee', 17000.00, 199),
 (31, 'taro', 'non_coffee', 17000.00, 200),
 (32, 'mendoan', 'snack', 13000.00, 200),
-(33, 'french fries', 'snack', 18000.00, 200),
-(34, 'banana crunchy', 'snack', 15000.00, 200),
-(35, 'roti bakar', 'snack', 16000.00, 200),
+(33, 'french fries', 'snack', 18000.00, 198),
+(34, 'banana crunchy', 'snack', 15000.00, 198),
+(35, 'roti bakar', 'snack', 16000.00, 196),
 (36, 'chocoberry', 'non_coffee', 17000.00, 200),
 (37, 'chocolate', 'non_coffee', 17000.00, 200),
-(38, 'red velvet', 'non_coffee', 17000.00, 200),
+(38, 'red velvet', 'non_coffee', 17000.00, 198),
 (39, 'nasi goreng biasa', 'main_course', 17000.00, 200),
 (40, 'nasi goreng searah', 'main_course', 22000.00, 200),
 (41, 'mie goreng searah', 'main_course', 17000.00, 200),
@@ -176,16 +209,16 @@ INSERT INTO `produk` (`id_produk`, `nama`, `jenis`, `harga`, `stok`) VALUES
 (43, 'rice bowl saus teriaki', 'main_course', 25000.00, 200),
 (44, 'rice bowl saus bbq', 'main_course', 25000.00, 200),
 (45, 'rice bowl sambal mentai', 'main_course', 22000.00, 200),
-(46, 'cireng ayam', 'snack', 18000.00, 197),
+(46, 'cireng ayam', 'snack', 18000.00, 195),
 (47, 'dimsum original', 'snack', 18000.00, 200),
 (48, 'dimsum mentai', 'snack', 20000.00, 200),
 (49, 'ayam bakar kremes', 'main_course', 25000.00, 200),
-(50, 'dessert brownies', 'main_course', 27000.00, 197),
-(51, 'katsu', 'main_course', 23000.00, 200),
+(50, 'dessert brownies', 'main_course', 27000.00, 196),
+(51, 'katsu', 'main_course', 23000.00, 183),
 (52, 'ayam geprek bakar', 'main_course', 27000.00, 200),
 (53, 'spaghetti searah', 'main_course', 25000.00, 200),
-(54, 'chicken steak with creamy mushroom sauce', 'main_course', 35000.00, 200),
-(55, 'dimsum goreng', 'snack', 20000.00, 200),
+(54, 'chicken steak with creamy mushroom sauce', 'main_course', 35000.00, 198),
+(55, 'dimsum goreng', 'snack', 20000.00, 198),
 (56, 'searah sharing mix platter', 'snack', 23000.00, 199);
 
 --
@@ -232,13 +265,13 @@ ALTER TABLE `produk`
 -- AUTO_INCREMENT for table `detail_pesanan`
 --
 ALTER TABLE `detail_pesanan`
-  MODIFY `id_detail_pesanan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id_detail_pesanan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT for table `pesanan`
 --
 ALTER TABLE `pesanan`
-  MODIFY `id_pesanan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_pesanan` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT for table `produk`
